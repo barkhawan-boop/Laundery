@@ -266,6 +266,8 @@ button {
 }
 
 .role-grid {
+  width: min(100%, 420px);
+  margin-inline: auto;
   grid-template-columns: 1fr;
 }
 
