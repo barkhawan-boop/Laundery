@@ -89,6 +89,58 @@ button {
   gap: 18px;
 }
 
+.splash-screen {
+  min-height: calc(100vh - 42px);
+  display: grid;
+  place-items: center;
+  animation: splashSlide 1.35s ease both;
+}
+
+.splash-brand {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.splash-logo {
+  width: 108px;
+  height: 108px;
+  border-radius: 30px;
+  box-shadow: var(--shadow-blue);
+  animation: splashLogo 1.05s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.splash-brand h1 {
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+@keyframes splashLogo {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splashSlide {
+  0%,
+  70% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+}
+
 .topbar {
   display: flex;
   align-items: center;

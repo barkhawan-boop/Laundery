@@ -468,6 +468,7 @@ let data = loadData();
 let view = getInitialView();
 let adminTapCount = 0;
 let adminTapTimer = null;
+let splashTimer = null;
 let nearestState = { loading: false, searched: false, error: "", results: [], userLocation: null };
 
 const app = document.querySelector("#app");
@@ -557,10 +558,12 @@ document.addEventListener("change", (event) => {
   const select = event.target.closest('[data-action="select-existing-customer"]');
   const ownerCustomerSelect = event.target.closest('[data-action="select-owner-customer"]');
   const deliveryToggle = event.target.closest('[data-action="toggle-delivery"]');
+  const preferenceField = event.target.closest("form[data-form] input, form[data-form] select");
 
   if (select) fillExistingCustomer(select);
   if (ownerCustomerSelect) selectOwnerCustomer(ownerCustomerSelect.value);
   if (deliveryToggle) updateDelivery(deliveryToggle.checked);
+  if (preferenceField) saveFieldPreference(preferenceField);
 });
 
 document.addEventListener("input", (event) => {
@@ -573,6 +576,9 @@ document.addEventListener("input", (event) => {
   if (codeSearch) {
     searchOwnerCustomerByCode(codeSearch.value);
   }
+
+  const preferenceField = event.target.closest("form[data-form] input, form[data-form] select");
+  if (preferenceField) saveFieldPreference(preferenceField);
 });
 
 document.addEventListener("keydown", (event) => {
@@ -593,6 +599,7 @@ document.addEventListener("submit", (event) => {
   updatePartsTotal(form);
   const formData = new FormData(form);
   const type = form.dataset.form;
+  saveFormPreferences(form);
 
   if (type === "owner-login") ownerLogin(formData);
   if (type === "customer-login") customerLogin(formData);
@@ -700,7 +707,8 @@ function loadData() {
       }
     ],
     notices: [],
-    lastSession: null
+    lastSession: null,
+    preferences: {}
   };
 }
 
@@ -713,7 +721,8 @@ function normalizeStoredData(state) {
     notices: Array.isArray(state.notices)
       ? state.notices.map((notice) => ({ ...notice, customerCode: normalizeCustomerCode(notice.customerCode), readAt: notice.readAt || null, orderId: notice.orderId || null, type: notice.type || "general" }))
       : [],
-    lastSession: state.lastSession || null
+    lastSession: state.lastSession || null,
+    preferences: state.preferences && typeof state.preferences === "object" ? state.preferences : {}
   };
 }
 
@@ -791,6 +800,35 @@ function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function preferenceKey(formType, fieldName) {
+  return `${formType}.${fieldName}`;
+}
+
+function preferenceValue(formType, fieldName, fallback = "") {
+  return data.preferences?.[preferenceKey(formType, fieldName)] ?? fallback;
+}
+
+function shouldSaveFieldPreference(field) {
+  const form = field.closest("form[data-form]");
+  if (!form || !field.name) return false;
+  if (form.dataset.form === "admin-login") return false;
+  if (field.type === "hidden" || field.type === "password" || field.type === "checkbox") return false;
+  if (field.readOnly || field.disabled) return false;
+  return true;
+}
+
+function saveFieldPreference(field) {
+  if (!shouldSaveFieldPreference(field)) return;
+  const form = field.closest("form[data-form]");
+  data.preferences = data.preferences || {};
+  data.preferences[preferenceKey(form.dataset.form, field.name)] = field.value;
+  saveData();
+}
+
+function saveFormPreferences(form) {
+  form.querySelectorAll("input[name], select[name]").forEach(saveFieldPreference);
+}
+
 function setLanguage(lang) {
   data.language = languages[lang] ? lang : "en";
   saveData();
@@ -810,9 +848,11 @@ function render() {
   markVisibleNotificationsRead();
   app.innerHTML = `<div class="app-shell">${renderScreen()}</div>`;
   decorateIcons();
+  scheduleSplash();
 }
 
 function renderScreen() {
+  if (view.screen === "splash") return renderSplash();
   if (view.screen === "language") return renderLanguage();
   if (view.screen === "owner-login") return renderOwnerLogin();
   if (view.screen === "customer-login") return renderCustomerLogin();
@@ -824,6 +864,32 @@ function renderScreen() {
   return renderRoleChoice();
 }
 
+function renderSplash() {
+  return `
+    <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
+      <div class="splash-brand">
+        <img class="splash-logo" src="assets/icon.svg?v=53" alt="" />
+        <h1>${escapeHtml(t("appName"))}</h1>
+      </div>
+    </section>
+  `;
+}
+
+function scheduleSplash() {
+  if (view.screen !== "splash") {
+    clearTimeout(splashTimer);
+    splashTimer = null;
+    return;
+  }
+
+  if (splashTimer) return;
+  splashTimer = setTimeout(() => {
+    splashTimer = null;
+    view = { screen: "language", session: null };
+    render();
+  }, 1400);
+}
+
 function renderTopbar({ title = t("appName"), subtitle = "", back = true, secretAdmin = false } = {}) {
   const brandAction = secretAdmin ? "secret-admin-tap" : "go-language";
   const brandLabel = secretAdmin ? t("appName") : t("chooseLanguage");
@@ -831,7 +897,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=52" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=53" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -847,7 +913,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=52" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=53" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -946,6 +1012,9 @@ function renderNearestResults() {
 }
 
 function renderOwnerLogin() {
+  const savedLaundryId = preferenceValue("owner-login", "laundryId");
+  const savedCode = preferenceValue("owner-login", "code");
+
   return `
     <section class="screen">
       ${renderTopbar({ title: t("ownerLogin") })}
@@ -954,12 +1023,12 @@ function renderOwnerLogin() {
           <span>${escapeHtml(t("laundryName"))}</span>
           <select class="select" name="laundryId" required>
             <option value="">${escapeHtml(t("selectLaundry"))}</option>
-            ${data.laundries.map((laundry) => `<option value="${escapeHtml(laundry.id)}">${escapeHtml(laundry.name)}</option>`).join("")}
+            ${data.laundries.map((laundry) => `<option value="${escapeHtml(laundry.id)}" ${savedLaundryId === laundry.id ? "selected" : ""}>${escapeHtml(laundry.name)}</option>`).join("")}
           </select>
         </label>
         <label class="field">
           <span>${escapeHtml(t("ownerCode"))}</span>
-          <input class="input" name="code" inputmode="numeric" autocomplete="one-time-code" required />
+          <input class="input" name="code" inputmode="numeric" autocomplete="one-time-code" value="${escapeHtml(savedCode)}" required />
         </label>
         <button class="btn primary" type="submit">${icons.owner}${escapeHtml(t("signIn"))}</button>
       </form>
@@ -968,6 +1037,9 @@ function renderOwnerLogin() {
 }
 
 function renderCustomerLogin() {
+  const savedLaundryId = preferenceValue("customer-login", "laundryId");
+  const savedCode = preferenceValue("customer-login", "code");
+
   return `
     <section class="screen">
       ${renderTopbar({ title: t("customerLogin") })}
@@ -976,12 +1048,12 @@ function renderCustomerLogin() {
           <span>${escapeHtml(t("selectLaundry"))}</span>
           <select class="select" name="laundryId" required>
             <option value="">${escapeHtml(t("selectLaundry"))}</option>
-            ${data.laundries.map((laundry) => `<option value="${escapeHtml(laundry.id)}">${escapeHtml(laundry.name)}</option>`).join("")}
+            ${data.laundries.map((laundry) => `<option value="${escapeHtml(laundry.id)}" ${savedLaundryId === laundry.id ? "selected" : ""}>${escapeHtml(laundry.name)}</option>`).join("")}
           </select>
         </label>
         <label class="field">
           <span>${escapeHtml(t("customerCode"))}</span>
-          <input class="input" name="code" autocomplete="one-time-code" required />
+          <input class="input" name="code" autocomplete="one-time-code" value="${escapeHtml(savedCode)}" required />
         </label>
         <button class="btn blue" type="submit">${icons.customer}${escapeHtml(t("signIn"))}</button>
       </form>
@@ -1132,6 +1204,9 @@ function renderCustomerDashboard() {
 function renderAdminDashboard() {
   const trialStart = todayDateString();
   const trialEnd = addMonthsDateString(trialStart, 3);
+  const savedOwnerPhone = preferenceValue("save-laundry", "ownerPhone");
+  const savedLocation = preferenceValue("save-laundry", "location");
+  const savedServices = preferenceValue("save-laundry", "services", localizedDefaultLaundryServices());
 
   return `
     <section class="screen">
@@ -1148,16 +1223,16 @@ function renderAdminDashboard() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("ownerPhone"))} (${escapeHtml(t("optional"))})</span>
-          <input class="input" name="ownerPhone" type="tel" inputmode="tel" autocomplete="tel" />
+          <input class="input" name="ownerPhone" type="tel" inputmode="tel" autocomplete="tel" value="${escapeHtml(savedOwnerPhone)}" />
         </label>
         <label class="field">
           <span>${escapeHtml(t("location"))} (${escapeHtml(t("optional"))})</span>
-          <input class="input" name="location" autocomplete="street-address" />
+          <input class="input" name="location" autocomplete="street-address" value="${escapeHtml(savedLocation)}" />
           <small class="field-hint">${escapeHtml(t("locationHint"))}</small>
         </label>
         <label class="field">
           <span>${escapeHtml(t("services"))}</span>
-          <input class="input" name="services" value="${escapeHtml(localizedDefaultLaundryServices())}" />
+          <input class="input" name="services" value="${escapeHtml(savedServices)}" />
           <small class="field-hint">${escapeHtml(t("servicesHint"))}</small>
         </label>
         <div class="button-row">
@@ -2200,11 +2275,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=52",
-        badge: "assets/icon.svg?v=52"
+        icon: "assets/icon.svg?v=53",
+        badge: "assets/icon.svg?v=53"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=52" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=53" });
     }
   });
 }
@@ -2527,14 +2602,7 @@ function markVisibleNotificationsRead() {
 }
 
 function getInitialView() {
-  if (isAdminAccessUrl()) {
-    return { screen: "admin-login", session: null };
-  }
-
-  const restored = restoreSavedSession();
-  if (restored) return restored;
-
-  return { screen: data.language ? "role" : "language", session: null };
+  return { screen: "splash", session: null };
 }
 
 function restoreSavedSession() {
