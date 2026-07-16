@@ -2,6 +2,33 @@ const STORAGE_KEY = "laundery-erbil-state-v1";
 const ADMIN_PIN = "0000";
 const DEFAULT_LAUNDRY_SERVICES = "Clothes Cleaning & Ironing, Dry Cleaning & Laundry, Blanket Washing, Cleaning, Drying";
 const REMEMBER_ADMIN_SESSION = false;
+const laundryServiceLabels = {
+  clothesCleaningIroning: {
+    en: "Clothes Cleaning & Ironing",
+    ku: "شوشتن و ئوتووکردنی جل",
+    ar: "تنظيف وكي الملابس"
+  },
+  dryCleaningLaundry: {
+    en: "Dry Cleaning & Laundry",
+    ku: "وشک شوشتن و لاندری",
+    ar: "تنظيف جاف وغسيل"
+  },
+  blanketWashing: {
+    en: "Blanket Washing",
+    ku: "شوشتنی بەتانی",
+    ar: "غسل البطانيات"
+  },
+  cleaning: {
+    en: "Cleaning",
+    ku: "پاککردنەوە",
+    ar: "تنظيف"
+  },
+  drying: {
+    en: "Drying",
+    ku: "وشککردن",
+    ar: "تجفيف"
+  }
+};
 
 const languages = {
   en: { label: "English", dir: "ltr" },
@@ -767,7 +794,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=49" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=50" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -783,7 +810,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=49" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=50" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1090,7 +1117,7 @@ function renderAdminDashboard() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("services"))}</span>
-          <input class="input" name="services" value="${escapeHtml(DEFAULT_LAUNDRY_SERVICES)}" />
+          <input class="input" name="services" value="${escapeHtml(localizedDefaultLaundryServices())}" />
           <small class="field-hint">${escapeHtml(t("servicesHint"))}</small>
         </label>
         <div class="button-row">
@@ -2081,11 +2108,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=49",
-        badge: "assets/icon.svg?v=49"
+        icon: "assets/icon.svg?v=50",
+        badge: "assets/icon.svg?v=50"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=49" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=50" });
     }
   });
 }
@@ -2241,7 +2268,31 @@ function laundryServices(laundry) {
   return String(laundry.services || DEFAULT_LAUNDRY_SERVICES)
     .split(",")
     .map((service) => service.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map(localizeLaundryService);
+}
+
+function localizedDefaultLaundryServices() {
+  return Object.values(laundryServiceLabels)
+    .map((labels) => labels[data.language || "en"] || labels.en)
+    .join(", ");
+}
+
+function localizeLaundryService(service) {
+  const key = laundryServiceKey(service);
+  const labels = key ? laundryServiceLabels[key] : null;
+  return labels ? labels[data.language || "en"] || labels.en : service;
+}
+
+function laundryServiceKey(service) {
+  const normalized = normalizeServiceName(service);
+  return Object.entries(laundryServiceLabels).find(([, labels]) =>
+    Object.values(labels).some((label) => normalizeServiceName(label) === normalized)
+  )?.[0] || null;
+}
+
+function normalizeServiceName(service) {
+  return String(service || "").trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function renderLocationValue(location) {
