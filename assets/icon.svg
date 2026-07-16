@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Laundery-Erbil icon</title>
+  <desc id="desc">A clean laundry basket and folded clothes mark.</desc>
+  <rect width="512" height="512" rx="96" fill="#1f7a68"/>
+  <path d="M118 188h276l-31 184a42 42 0 0 1-42 35H191a42 42 0 0 1-42-35z" fill="#f7f8fb"/>
+  <path d="M158 188 221 97a24 24 0 0 1 39 0l63 91" fill="none" stroke="#f7f8fb" stroke-width="30" stroke-linecap="round"/>
+  <path d="M162 223h188M176 276h160M190 329h132" stroke="#1f7a68" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="354" cy="147" r="39" fill="#f2c94c"/>
+  <path d="M337 147h34M354 130v34" stroke="#172029" stroke-width="16" stroke-linecap="round"/>
+</svg>
