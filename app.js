@@ -766,7 +766,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=47" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=48" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -782,7 +782,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=47" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=48" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1448,7 +1448,7 @@ function renderCustomerStatus(latest, active, laundry) {
       <strong>${escapeHtml(t("waiting"))}</strong>
       ${target.orderName ? `<span>${escapeHtml(t("orderName"))}: ${escapeHtml(target.orderName)}</span>` : ""}
       ${renderOrderServices(target)}
-      <span>${target.parts} ${escapeHtml(t("partsLabel"))} · ${escapeHtml(formatDate(target.createdAt))}</span>
+      ${renderOrderPiecesDate(target)}
       <button class="btn coral" data-action="customer-urgent" ${urgentSent || target.done ? "disabled" : ""}>${icons.alert}${escapeHtml(urgentSent ? t("urgentSent") : t("requestUrgent"))}</button>
       ${deliveryButton}
       ${urgentReceipt}
@@ -1478,15 +1478,29 @@ function renderDeliveryLocationLine(order, tagName = "p") {
   return `<${tagName} class="meta delivery-location-line">${icons.truck}${escapeHtml(t("deliveryLocation"))}: ${content}</${tagName}>`;
 }
 
+function renderOrderPiecesDate(order) {
+  return `
+    <span class="order-pieces-date">
+      <span class="piece-count"><span dir="ltr">${escapeHtml(String(order.parts))}</span> ${escapeHtml(t("partsLabel"))}</span>
+      <span class="date-text" dir="ltr">${escapeHtml(formatDate(order.createdAt))}</span>
+    </span>
+  `;
+}
+
+
 function renderHistoryCard(order, laundry) {
   return `
-    <article class="card ${order.done ? "done" : ""}">
-      <div class="card-head">
+    <details class="card history-order ${order.done ? "done" : ""}">
+      <summary class="history-summary">
+        <span class="history-summary-title">${escapeHtml(laundry?.name || t("laundryName"))}</span>
+        ${renderOrderPiecesDate(order)}
+      </summary>
+      <div class="card-head history-details">
         <div>
           <h3 class="card-title">${escapeHtml(laundry?.name || t("laundryName"))}</h3>
           ${order.orderName ? `<p class="contact-line">${escapeHtml(t("orderName"))}: ${escapeHtml(order.orderName)}</p>` : ""}
           ${renderOrderServices(order)}
-          <p class="meta">${escapeHtml(formatDate(order.createdAt))} · ${order.parts} ${escapeHtml(t("partsLabel"))}</p>
+          ${renderOrderPiecesDate(order)}
         </div>
         <div class="badge-row">
           <span class="badge ${order.done ? "done" : "info"}">${escapeHtml(order.done ? t("ready") : t("waiting"))}</span>
@@ -1495,7 +1509,7 @@ function renderHistoryCard(order, laundry) {
         </div>
       </div>
       ${renderDeliveryLocationLine(order)}
-    </article>
+    </details>
   `;
 }
 
@@ -2066,11 +2080,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=47",
-        badge: "assets/icon.svg?v=47"
+        icon: "assets/icon.svg?v=48",
+        badge: "assets/icon.svg?v=48"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=47" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=48" });
     }
   });
 }

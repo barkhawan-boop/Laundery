@@ -1,11 +1,11 @@
-const CACHE_NAME = "erbil-laundries-v47";
+const CACHE_NAME = "erbil-laundries-v48";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=47",
-  "./app.js?v=47",
+  "./styles.css?v=48",
+  "./app.js?v=48",
   "./manifest.webmanifest",
-  "./assets/icon.svg?v=47",
+  "./assets/icon.svg?v=48",
   "./assets/fonts/Sarchia_Baran.ttf",
   "./assets/fonts/Sarchia_Baran-Bold.ttf"
 ];
