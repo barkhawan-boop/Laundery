@@ -404,7 +404,7 @@ let data = loadData();
 let view = getInitialView();
 let adminTapCount = 0;
 let adminTapTimer = null;
-let nearestState = { loading: false, searched: false, error: "", results: [] };
+let nearestState = { loading: false, searched: false, error: "", results: [], userLocation: null };
 
 const app = document.querySelector("#app");
 const toastStack = document.querySelector("#toastStack");
@@ -482,6 +482,13 @@ document.addEventListener("change", (event) => {
   if (deliveryToggle) updateDelivery(deliveryToggle.checked);
 });
 
+document.addEventListener("input", (event) => {
+  const input = event.target.closest('input[name^="ironQty_"]');
+  if (input) {
+    updatePartsTotal(event.target.closest("form"));
+  }
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Enter" && event.key !== " ") return;
 
@@ -497,6 +504,7 @@ document.addEventListener("submit", (event) => {
   if (!form) return;
   event.preventDefault();
 
+  updatePartsTotal(form);
   const formData = new FormData(form);
   const type = form.dataset.form;
 
@@ -527,7 +535,7 @@ function loadData() {
         name: "Shanadar Laundry",
         code: "1842",
         ownerPhone: "07504558922",
-        location: "Erbil",
+        location: "https://www.google.com/maps/search/?api=1&query=Shanadar%20Laundry%20Erbil",
         services: DEFAULT_LAUNDRY_SERVICES,
         serviceDisabled: false,
         deliveryEnabled: false,
@@ -540,7 +548,7 @@ function loadData() {
         name: "Citadel Clean",
         code: "2760",
         ownerPhone: "",
-        location: "Erbil",
+        location: "https://www.google.com/maps/search/?api=1&query=Citadel%20Clean%20Erbil",
         services: DEFAULT_LAUNDRY_SERVICES,
         serviceDisabled: false,
         deliveryEnabled: false,
@@ -737,7 +745,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=34" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=35" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -753,7 +761,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=34" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=35" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -813,19 +821,31 @@ function renderNearestResults() {
   if (!nearestState.searched && !nearestState.results.length) return "";
   if (!nearestState.results.length) return `<div class="empty">${escapeHtml(t("noNearbyLaundries"))}</div>`;
 
-  return nearestState.results.map((result) => `
-    <article class="card">
-      <div class="card-head">
-        <div>
-          <h3 class="card-title">${escapeHtml(result.laundry.name)}</h3>
-          <p class="meta">${formatDistance(result.distanceKm)} ${escapeHtml(t("distanceAway"))}</p>
-          ${result.laundry.ownerPhone ? `<p class="meta">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(result.laundry.ownerPhone)}">${escapeHtml(result.laundry.ownerPhone)}</a></p>` : ""}
-          ${result.laundry.location ? `<p class="meta">${escapeHtml(t("location"))}: ${renderLocationValue(result.laundry.location)}</p>` : `<p class="meta">${escapeHtml(t("laundryLocationMissing"))}</p>`}
+  return nearestState.results.map((result) => {
+    const mapUrl = googleMapsSearchUrl(result.laundry);
+    const directionsUrl = googleMapsDirectionsUrl(result.laundry, nearestState.userLocation);
+    const distanceLine = Number.isFinite(result.distanceKm)
+      ? `<p class="meta">${formatDistance(result.distanceKm)} ${escapeHtml(t("distanceAway"))}</p>`
+      : `<p class="meta">${escapeHtml(t("location"))}: Google Maps</p>`;
+
+    return `
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h3 class="card-title">${escapeHtml(result.laundry.name)}</h3>
+            ${distanceLine}
+            ${result.laundry.ownerPhone ? `<p class="meta">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(result.laundry.ownerPhone)}">${escapeHtml(result.laundry.ownerPhone)}</a></p>` : ""}
+            ${result.laundry.location ? `<p class="meta">${escapeHtml(t("location"))}: ${renderLocationValue(result.laundry.location)}</p>` : `<p class="meta">${escapeHtml(t("laundryLocationMissing"))}</p>`}
+          </div>
+          <span class="badge done">${icons.pin}${escapeHtml(t("nearestLaundry"))}</span>
         </div>
-        <span class="badge done">${icons.pin}${escapeHtml(t("nearestLaundry"))}</span>
-      </div>
-    </article>
-  `).join("");
+        <div class="button-row">
+          <a class="btn light" href="${escapeHtml(mapUrl)}" target="_blank" rel="noopener">${icons.pin}Google Maps</a>
+          <a class="btn primary" href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener">${icons.truck}Directions</a>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 function renderOwnerLogin() {
@@ -1104,10 +1124,6 @@ function renderOwnerCustomerGroup(group, blocked = false) {
         <input type="hidden" name="customerName" value="${escapeHtml(latest?.customerName || group.name || "")}" />
         <input type="hidden" name="customerPhone" value="${escapeHtml(latest?.customerPhone || group.phone || "")}" />
         <h4 class="mini-title">${escapeHtml(t("newSubmission"))}</h4>
-        <label class="field">
-          <span>${escapeHtml(t("clothesParts"))}</span>
-          <input class="input" name="parts" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" required ${disabledAttr} />
-        </label>
         ${renderServiceChoiceTable(disabledAttr)}
         <label class="check-field">
           <input name="urgent" type="checkbox" ${disabledAttr} />
@@ -1235,14 +1251,19 @@ function renderServiceChoiceTable(disabledAttr = "") {
           </div>
         `).join("")}
       </div>
-      <div class="ironing-amounts">
+      <div class="service-amount-grid">
+        <span aria-hidden="true"></span>
         ${columns.map((column) => `
-          <label class="field">
+          <label class="field service-amount-field">
             <span>${escapeHtml(t("ironingAmount"))} - ${escapeHtml(column.label)}</span>
             <input class="input mini-input" name="ironQty_${column.key}" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" ${disabledAttr} />
           </label>
         `).join("")}
       </div>
+      <label class="field service-total-field">
+        <span>${escapeHtml(t("clothesParts"))}</span>
+        <input class="input mini-input" name="parts" data-role="parts-total" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" readonly required ${disabledAttr} />
+      </label>
     </section>
   `;
 }
@@ -1298,6 +1319,20 @@ function collectServiceDetails(formData) {
   });
 
   return { selections, ironingAmounts };
+}
+
+function updatePartsTotal(form) {
+  if (!form) return;
+
+  const totalInput = form.querySelector('[data-role="parts-total"]');
+  if (!totalInput) return;
+
+  const total = serviceColumns().reduce((sum, column) => {
+    const value = localizedNumber(form.elements[`ironQty_${column.key}`]?.value);
+    return sum + (Number.isFinite(value) && value > 0 ? value : 0);
+  }, 0);
+
+  totalInput.value = total > 0 ? String(total) : "";
 }
 
 function renderCustomerStatus(latest, active, laundry) {
@@ -1806,7 +1841,7 @@ function fillCurrentDeliveryLocation() {
 
 function findNearestLaundries() {
   if (!("geolocation" in navigator)) {
-    nearestState = { loading: false, searched: true, error: t("locationUnavailable"), results: [] };
+    nearestState = { loading: false, searched: true, error: t("locationUnavailable"), results: registeredLaundryMapResults(), userLocation: null };
     render();
     return;
   }
@@ -1824,25 +1859,39 @@ function findNearestLaundries() {
       const results = data.laundries
         .map((laundry) => {
           const coords = parseLocationCoordinates(laundry.location);
-          if (!coords) return null;
 
           return {
             laundry,
-            distanceKm: distanceBetweenKm(userLocation, coords)
+            distanceKm: coords ? distanceBetweenKm(userLocation, coords) : null
           };
         })
-        .filter(Boolean)
-        .sort((a, b) => a.distanceKm - b.distanceKm);
+        .filter((result) => result.laundry.location || result.laundry.name)
+        .sort(sortNearestResults);
 
-      nearestState = { loading: false, searched: true, error: "", results };
+      nearestState = { loading: false, searched: true, error: "", results, userLocation };
       render();
     },
     () => {
-      nearestState = { loading: false, searched: true, error: t("locationNeeded"), results: [] };
+      nearestState = { loading: false, searched: true, error: t("locationNeeded"), results: registeredLaundryMapResults(), userLocation: null };
       render();
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
   );
+}
+
+function registeredLaundryMapResults() {
+  return data.laundries
+    .filter((laundry) => laundry.location || laundry.name)
+    .map((laundry) => ({ laundry, distanceKm: null }));
+}
+
+function sortNearestResults(a, b) {
+  const aHasDistance = Number.isFinite(a.distanceKm);
+  const bHasDistance = Number.isFinite(b.distanceKm);
+  if (aHasDistance && bHasDistance) return a.distanceKm - b.distanceKm;
+  if (aHasDistance) return -1;
+  if (bHasDistance) return 1;
+  return a.laundry.name.localeCompare(b.laundry.name);
 }
 
 function addNotice({ audience, laundryId, customerCode, orderId = null, title, body, type = "general" }) {
@@ -1917,11 +1966,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=34",
-        badge: "assets/icon.svg?v=34"
+        icon: "assets/icon.svg?v=35",
+        badge: "assets/icon.svg?v=35"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=34" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=35" });
     }
   });
 }
@@ -2086,14 +2135,36 @@ function renderLocationValue(location) {
     : safeValue;
 }
 
+function googleMapsSearchUrl(laundry) {
+  const location = String(laundry?.location || "").trim();
+  if (/^https?:\/\//i.test(location)) return location;
+
+  const query = location
+    ? `${laundry.name} ${location}`
+    : `${laundry.name} Erbil`;
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function googleMapsDirectionsUrl(laundry, origin = null) {
+  const destinationCoords = parseLocationCoordinates(laundry?.location);
+  const destination = destinationCoords
+    ? `${destinationCoords.lat},${destinationCoords.lng}`
+    : String(laundry?.location || "").trim() || `${laundry?.name || ""} Erbil`;
+  const originPart = origin ? `&origin=${encodeURIComponent(`${origin.lat},${origin.lng}`)}` : "";
+
+  return `https://www.google.com/maps/dir/?api=1${originPart}&destination=${encodeURIComponent(destination)}`;
+}
+
 function parseLocationCoordinates(location) {
   const value = normalizeDigits(location);
   if (!value) return null;
 
   const queryMatch = value.match(/[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/i);
   const atMatch = value.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+  const bangMatch = value.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
   const plainMatch = value.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
-  const match = queryMatch || atMatch || plainMatch;
+  const match = queryMatch || atMatch || bangMatch || plainMatch;
   if (!match) return null;
 
   const lat = localizedNumber(match[1]);

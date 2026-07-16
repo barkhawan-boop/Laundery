@@ -629,10 +629,28 @@ button {
   accent-color: var(--brand);
 }
 
-.ironing-amounts {
+.service-amount-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: minmax(92px, 1.15fr) repeat(3, minmax(54px, 0.75fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.service-amount-field {
+  min-width: 0;
+}
+
+.service-amount-field span {
+  min-height: 2.5em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: center;
+}
+
+.service-total-field {
+  width: min(100%, 280px);
+  justify-self: end;
 }
 
 .mini-input {
