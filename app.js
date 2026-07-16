@@ -766,7 +766,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=46" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=47" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -782,7 +782,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=46" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=47" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1044,11 +1044,12 @@ function renderCustomerDashboard() {
   const latest = orders[0];
   const active = orders.find((order) => !order.done);
   const name = latest?.customerName || customer?.name || `${t("codeLabel")} ${session.customerCode}`;
+  const customerTitle = `${name} - ${t("codeLabel")}: ${session.customerCode}`;
   const notices = noticesForCustomer(session.laundryId, session.customerCode);
 
   return `
     <section class="screen">
-      ${renderTopbar({ title: `${t("welcome")}, ${name}`, subtitle: laundry.name, back: false })}
+      ${renderTopbar({ title: `${t("welcome")}, ${customerTitle}`, subtitle: laundry.name, back: false })}
       ${renderLaundryContact(laundry)}
       ${latest ? renderCustomerStatus(latest, active, laundry) : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       ${renderNotices(notices)}
@@ -2065,11 +2066,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=46",
-        badge: "assets/icon.svg?v=46"
+        icon: "assets/icon.svg?v=47",
+        badge: "assets/icon.svg?v=47"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=46" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=47" });
     }
   });
 }
