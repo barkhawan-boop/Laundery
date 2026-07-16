@@ -752,7 +752,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=41" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=42" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -768,7 +768,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=41" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=42" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1301,17 +1301,40 @@ function renderOrderServices(order) {
 
   if (!selections.length && !quantityEntries.length) return "";
 
+  const isSelected = (rowKey, columnKey) =>
+    selections.some((selection) => selection.row === rowKey && selection.column === columnKey);
+
   return `
-    <div class="service-summary">
+    <div class="service-summary service-summary-table">
       <strong>${escapeHtml(t("serviceChoices"))}</strong>
-      ${selections.length ? `
-        <div class="service-pills">
-          ${selections.map((selection) => `<span class="service-pill">${escapeHtml(serviceLabel(selection.row))} - ${escapeHtml(serviceLabel(selection.column))}</span>`).join("")}
+      <div class="service-choice-table service-readonly-table" role="table" aria-label="${escapeHtml(t("serviceChoices"))}">
+        <div class="service-choice-row service-choice-head" role="row">
+          <span role="columnheader"></span>
+          ${serviceColumns().map((column) => `<span role="columnheader">${escapeHtml(column.label)}</span>`).join("")}
         </div>
-      ` : ""}
+        ${serviceRows().map((row) => `
+          <div class="service-choice-row" role="row">
+            <span role="rowheader">${escapeHtml(row.label)}</span>
+            ${serviceColumns().map((column) => `
+              <span class="service-readonly-cell">
+                <input type="checkbox" ${isSelected(row.key, column.key) ? "checked" : ""} disabled />
+              </span>
+            `).join("")}
+          </div>
+        `).join("")}
+      </div>
       ${quantityEntries.length ? `
-        <div class="service-pills">
-          ${quantityEntries.map(({ column, amount }) => `<span class="service-pill">${escapeHtml(t("ironingAmount"))}: ${escapeHtml(column.label)} ${amount}</span>`).join("")}
+        <div class="service-amount-grid service-readonly-amounts">
+          <span aria-hidden="true"></span>
+          ${serviceColumns().map((column) => {
+            const amount = localizedNumber(quantities[column.key]);
+            return `
+              <label class="field service-amount-field">
+                <span>${escapeHtml(column.label)}</span>
+                <input class="input mini-input" value="${Number.isFinite(amount) && amount > 0 ? escapeHtml(amount) : ""}" readonly />
+              </label>
+            `;
+          }).join("")}
         </div>
       ` : ""}
     </div>
@@ -2002,11 +2025,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=41",
-        badge: "assets/icon.svg?v=41"
+        icon: "assets/icon.svg?v=42",
+        badge: "assets/icon.svg?v=42"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=41" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=42" });
     }
   });
 }

@@ -672,6 +672,37 @@ button {
   font-size: 0.86rem;
 }
 
+.service-summary-table {
+  gap: 10px;
+}
+
+.service-readonly-table {
+  box-shadow: none;
+}
+
+.service-readonly-cell {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 8px;
+}
+
+.service-readonly-cell input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--brand);
+}
+
+.service-readonly-cell input:not(:checked) {
+  opacity: 0.58;
+}
+
+.service-readonly-amounts {
+  gap: 8px;
+}
+
 .card-head {
   display: flex;
   justify-content: space-between;
