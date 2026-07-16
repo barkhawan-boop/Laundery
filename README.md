@@ -1,4 +1,4 @@
-# Laundery-Erbil
+# Erbil Laundries
 
 Mobile-first prototype for laundry owners, customers, and an admin in Erbil.
 

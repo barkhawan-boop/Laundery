@@ -11,7 +11,7 @@ const languages = {
 const dict = {
   en: {
     city: "Erbil service",
-    appName: "Laundery-Erbil",
+    appName: "Erbil Laundries",
     chooseLanguage: "Choose language",
     owner: "Laundry owner",
     customer: "Customer",
@@ -137,7 +137,7 @@ const dict = {
   },
   ku: {
     city: "خزمەتگوزاری هەولێر",
-    appName: "ئوتوەکانی هەولێر",
+    appName: "Erbil Laundries",
     chooseLanguage: "زمان هەڵبژێرە",
     owner: "خاوەنی لاندری",
     customer: "کڕیار",
@@ -263,7 +263,7 @@ const dict = {
   },
   ar: {
     city: "خدمة أربيل",
-    appName: "مکوی-أربيل",
+    appName: "Erbil Laundries",
     chooseLanguage: "اختر اللغة",
     owner: "صاحب المغسلة",
     customer: "الزبون",
@@ -748,7 +748,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=38" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=39" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -764,7 +764,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=38" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=39" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1991,11 +1991,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=38",
-        badge: "assets/icon.svg?v=38"
+        icon: "assets/icon.svg?v=39",
+        badge: "assets/icon.svg?v=39"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=38" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=39" });
     }
   });
 }
