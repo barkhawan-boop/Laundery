@@ -125,6 +125,7 @@ const dict = {
     invalidAdmin: "Wrong admin PIN",
     invalidCode: "Use a code from 0 to 500",
     duplicateActive: "This code already has active clothes",
+    duplicateCustomerCode: "This code already belongs to another customer. Choose the customer from the existing list.",
     notificationPermission: "Phone alerts",
     enableAlerts: "Enable alerts",
     alertsEnabled: "Alerts enabled",
@@ -250,6 +251,7 @@ const dict = {
     invalidAdmin: "پینی ئەدمین هەڵەیە",
     invalidCode: "کۆد لە نێوان 0 تا 500 بەکاربهێنە",
     duplicateActive: "ئەم کۆدە جلێکی چالاکی هەیە",
+    duplicateCustomerCode: "ئەم کۆدە پێشتر بۆ کڕیارێک تۆمارکراوە. کڕیارەکە لە لیستی کڕیاری پێشوو هەڵبژێرە.",
     notificationPermission: "ئاگاداری مۆبایل",
     enableAlerts: "چالاککردنی ئاگاداری",
     alertsEnabled: "ئاگاداری چالاککرا",
@@ -375,6 +377,7 @@ const dict = {
     invalidAdmin: "رمز المشرف غير صحيح",
     invalidCode: "استخدم كودا من 0 إلى 500",
     duplicateActive: "يوجد طلب نشط لهذا الكود",
+    duplicateCustomerCode: "هذا الكود مسجل لزبون آخر. اختر الزبون من القائمة السابقة.",
     notificationPermission: "تنبيهات الهاتف",
     enableAlerts: "تفعيل التنبيهات",
     alertsEnabled: "تم تفعيل التنبيهات",
@@ -745,7 +748,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=37" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=38" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -761,7 +764,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=37" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=38" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1569,6 +1572,7 @@ function adminLogin(formData) {
 }
 
 function addCustomer(formData, form) {
+  const formType = form?.dataset?.form || "";
   const laundryId = view.session?.laundryId;
   const customerCode = localizedNumber(formData.get("customerCode"));
   const partsValue = String(formData.get("parts") || "").trim();
@@ -1593,6 +1597,13 @@ function addCustomer(formData, form) {
 
   if (hasParts && (!Number.isInteger(parts) || parts < 1)) {
     toast(t("clothesParts"), "error");
+    return;
+  }
+
+  const existingCustomer = findCustomer(laundryId, customerCode);
+  const isNewCustomerForm = formType === "add-customer";
+  if (isNewCustomerForm && existingCustomer) {
+    toast(t("duplicateCustomerCode"), "error");
     return;
   }
 
@@ -1980,11 +1991,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=37",
-        badge: "assets/icon.svg?v=37"
+        icon: "assets/icon.svg?v=38",
+        badge: "assets/icon.svg?v=38"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=37" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=38" });
     }
   });
 }
