@@ -868,7 +868,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=56" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=57" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -897,7 +897,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=56" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=57" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -913,7 +913,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=56" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=57" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1128,7 +1128,7 @@ function renderOwnerDashboard() {
           <input class="input" name="customerPhone" type="tel" inputmode="tel" autocomplete="tel" ${disabledAttr} />
         </label>
         <label class="field">
-          <span>${escapeHtml(t("customerCode"))} · ${escapeHtml(t("codeRange"))}</span>
+          <span>${escapeHtml(t("customerCode"))}</span>
           <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" readonly required ${disabledAttr} />
         </label>
         <button class="btn light" type="button" data-action="generate-customer-code" ${disabledAttr}>${icons.code}${escapeHtml(t("generateCode"))}</button>
@@ -2275,11 +2275,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=56",
-        badge: "assets/icon.svg?v=56"
+        icon: "assets/icon.svg?v=57",
+        badge: "assets/icon.svg?v=57"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=56" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=57" });
     }
   });
 }
