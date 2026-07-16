@@ -868,7 +868,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=55" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=56" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -897,7 +897,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=55" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=56" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -913,7 +913,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=55" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=56" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -938,7 +938,7 @@ function renderRoleChoice() {
       <div class="role-grid">
         <button class="btn primary" data-action="screen" data-screen="owner-login">${icons.owner}${escapeHtml(t("owner"))}</button>
         <button class="btn blue" data-action="screen" data-screen="customer-login">${icons.customer}${escapeHtml(t("customer"))}</button>
-        <button class="btn light role-grid-center" data-action="screen" data-screen="nearest-laundry">${icons.pin}${escapeHtml(t("findNearestLaundry"))}</button>
+        <button class="btn light" data-action="screen" data-screen="nearest-laundry">${icons.pin}${escapeHtml(t("findNearestLaundry"))}</button>
       </div>
       <div class="panel">
         <div class="panel-title">
@@ -2275,11 +2275,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=55",
-        badge: "assets/icon.svg?v=55"
+        icon: "assets/icon.svg?v=56",
+        badge: "assets/icon.svg?v=56"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=55" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=56" });
     }
   });
 }

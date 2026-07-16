@@ -269,8 +269,9 @@ button {
   grid-template-columns: 1fr;
 }
 
-.role-grid-center {
-  justify-self: stretch;
+.role-grid > .btn {
+  width: 100%;
+  grid-column: 1 / -1;
 }
 
 .panel {
@@ -1145,10 +1146,6 @@ button {
 @media (min-width: 640px) {
   #app {
     padding-inline: 28px;
-  }
-
-  .role-grid-center {
-    width: 100%;
   }
 
   .language-grid {
