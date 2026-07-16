@@ -748,7 +748,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=39" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=40" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -764,7 +764,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=39" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=40" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -796,9 +796,6 @@ function renderRoleChoice() {
           <strong>${escapeHtml(t("notificationPermission"))}</strong>
           <button class="btn light" data-action="enable-alerts">${icons.bell}${escapeHtml(t("enableAlerts"))}</button>
         </div>
-      </div>
-      <div class="footer-actions">
-        <button class="btn ghost" data-action="change-language">${escapeHtml(t("changeLanguage"))}</button>
       </div>
     </section>
   `;
@@ -1991,11 +1988,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=39",
-        badge: "assets/icon.svg?v=39"
+        icon: "assets/icon.svg?v=40",
+        badge: "assets/icon.svg?v=40"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=39" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=40" });
     }
   });
 }
