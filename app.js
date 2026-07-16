@@ -868,7 +868,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=59" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=60" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -897,7 +897,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=59" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=60" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -913,7 +913,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=59" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=60" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1152,10 +1152,10 @@ function renderOwnerDashboard() {
           ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked) : ""}
         ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       </section>
-      ${renderUrgentCustomers(urgentGroups, blocked)}
       ${selectedCustomer ? `
         <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(selectedCustomer.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
       ` : ""}
+      ${renderUrgentCustomers(urgentGroups, blocked)}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
       </div>
@@ -2276,11 +2276,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=59",
-        badge: "assets/icon.svg?v=59"
+        icon: "assets/icon.svg?v=60",
+        badge: "assets/icon.svg?v=60"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=59" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=60" });
     }
   });
 }
