@@ -423,6 +423,33 @@ const dict = {
   }
 };
 
+Object.assign(dict.en, {
+  deleteCustomer: "Delete customer",
+  deleteLaundry: "Delete laundry",
+  confirmDeleteCustomer: "Delete this customer and all orders?",
+  confirmDeleteLaundry: "Delete this laundry and all related customers/orders?",
+  customerDeleted: "Customer deleted",
+  laundryDeleted: "Laundry deleted"
+});
+
+Object.assign(dict.ku, {
+  deleteCustomer: "سڕینەوەی کڕیار",
+  deleteLaundry: "سڕینەوەی لاندری",
+  confirmDeleteCustomer: "ئەم کڕیارە و هەموو داواکارییەکانی بسڕدرێتەوە؟",
+  confirmDeleteLaundry: "ئەم لاندرییە و هەموو کڕیار و داواکارییەکانی بسڕدرێتەوە؟",
+  customerDeleted: "کڕیار سڕدرایەوە",
+  laundryDeleted: "لاندری سڕدرایەوە"
+});
+
+Object.assign(dict.ar, {
+  deleteCustomer: "حذف الزبون",
+  deleteLaundry: "حذف المغسلة",
+  confirmDeleteCustomer: "هل تريد حذف هذا الزبون وكل طلباته؟",
+  confirmDeleteLaundry: "هل تريد حذف هذه المغسلة وكل الزبائن والطلبات المرتبطة بها؟",
+  customerDeleted: "تم حذف الزبون",
+  laundryDeleted: "تم حذف المغسلة"
+});
+
 const icons = {
   owner: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.5 12 4l7 6.5V20H5z"/><path d="M9 20v-6h6v6"/></svg>',
   customer: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
@@ -511,6 +538,12 @@ document.addEventListener("click", (event) => {
     const form = button.closest("form");
     const input = form?.elements.customerCode;
     if (input) input.value = generateCustomerCode(view.session?.laundryId);
+  }
+  if (action === "delete-customer") {
+    deleteCustomer(button.dataset.customerCode);
+  }
+  if (action === "delete-laundry") {
+    deleteLaundry(button.dataset.laundryId);
   }
   if (action === "enable-alerts") {
     requestNotificationPermission();
@@ -798,7 +831,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=51" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=52" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -814,7 +847,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=51" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=52" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1097,6 +1130,9 @@ function renderCustomerDashboard() {
 }
 
 function renderAdminDashboard() {
+  const trialStart = todayDateString();
+  const trialEnd = addMonthsDateString(trialStart, 3);
+
   return `
     <section class="screen">
       ${renderTopbar({ title: t("admin"), subtitle: t("appName"), back: false })}
@@ -1127,11 +1163,11 @@ function renderAdminDashboard() {
         <div class="button-row">
           <label class="field">
             <span>${escapeHtml(t("activeFrom"))}</span>
-            <input class="input" name="activeFrom" type="date" />
+            <input class="input" name="activeFrom" type="date" value="${escapeHtml(trialStart)}" />
           </label>
           <label class="field">
             <span>${escapeHtml(t("activeTo"))}</span>
-            <input class="input" name="activeTo" type="date" />
+            <input class="input" name="activeTo" type="date" value="${escapeHtml(trialEnd)}" />
           </label>
         </div>
         <label class="check-field">
@@ -1180,6 +1216,7 @@ function renderOwnerCustomerGroup(group, blocked = false) {
       <div class="submission-list">
         ${submissions}
       </div>
+      <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(group.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
       <form class="form-grid service-form" data-form="add-submission">
         <input type="hidden" name="customerCode" value="${escapeHtml(group.customerCode)}" />
         <input type="hidden" name="customerName" value="${escapeHtml(latest?.customerName || group.name || "")}" />
@@ -1583,6 +1620,7 @@ function renderLaundryAdminCard(laundry) {
         </div>
         <button class="btn light" type="submit">${icons.done}${escapeHtml(t("saveService"))}</button>
       </form>
+      <button class="btn danger" data-action="delete-laundry" data-laundry-id="${escapeHtml(laundry.id)}">${escapeHtml(t("deleteLaundry"))}</button>
     </article>
   `;
 }
@@ -1788,13 +1826,18 @@ function saveLaundry(formData, form) {
   const ownerPhone = String(formData.get("ownerPhone") || "").trim();
   const location = String(formData.get("location") || "").trim();
   const services = String(formData.get("services") || DEFAULT_LAUNDRY_SERVICES).trim();
-  const activeFrom = String(formData.get("activeFrom") || "");
-  const activeTo = String(formData.get("activeTo") || "");
+  let activeFrom = String(formData.get("activeFrom") || "");
+  let activeTo = String(formData.get("activeTo") || "");
   const serviceDisabled = formData.get("serviceDisabled") === "on";
 
   if (!name || !code) return;
 
   const existing = data.laundries.find((laundry) => normalize(laundry.name) === normalize(name));
+  if (!existing) {
+    activeFrom = activeFrom || todayDateString();
+    activeTo = activeTo || addMonthsDateString(activeFrom, 3);
+  }
+
   if (existing) {
     existing.name = name;
     existing.code = code;
@@ -1836,6 +1879,51 @@ function updateLaundryService(formData) {
 
   saveData();
   toast(t("saved"));
+  render();
+}
+
+function deleteCustomer(customerCode) {
+  const laundryId = view.session?.laundryId;
+  const code = normalizeCustomerCode(customerCode);
+  if (!laundryId || !isValidCustomerCode(code)) return;
+  if (!window.confirm(t("confirmDeleteCustomer"))) return;
+
+  data.customers = data.customers.filter((customer) =>
+    !(customer.laundryId === laundryId && customer.code === code)
+  );
+  data.orders = data.orders.filter((order) =>
+    !(order.laundryId === laundryId && order.customerCode === code)
+  );
+  data.notices = data.notices.filter((notice) =>
+    !(notice.laundryId === laundryId && notice.customerCode === code)
+  );
+
+  if (view.selectedCustomerCode === code) {
+    view.selectedCustomerCode = null;
+  }
+
+  saveData();
+  toast(t("customerDeleted"));
+  render();
+}
+
+function deleteLaundry(laundryId) {
+  const id = String(laundryId || "");
+  if (!id || !findLaundry(id)) return;
+  if (!window.confirm(t("confirmDeleteLaundry"))) return;
+
+  data.laundries = data.laundries.filter((laundry) => laundry.id !== id);
+  data.customers = data.customers.filter((customer) => customer.laundryId !== id);
+  data.orders = data.orders.filter((order) => order.laundryId !== id);
+  data.notices = data.notices.filter((notice) => notice.laundryId !== id);
+
+  if (view.session?.laundryId === id || data.lastSession?.laundryId === id) {
+    data.lastSession = null;
+    view = { screen: "admin-dashboard", session: { role: "admin" } };
+  }
+
+  saveData();
+  toast(t("laundryDeleted"));
   render();
 }
 
@@ -2112,11 +2200,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=51",
-        badge: "assets/icon.svg?v=51"
+        icon: "assets/icon.svg?v=52",
+        badge: "assets/icon.svg?v=52"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=51" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=52" });
     }
   });
 }
@@ -2555,6 +2643,15 @@ function todayDateString() {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
+}
+
+function addMonthsDateString(value, months) {
+  const [year, month, day] = String(value || todayDateString()).split("-").map(Number);
+  const date = new Date(year, (month || 1) - 1, day || 1);
+  date.setMonth(date.getMonth() + months);
+  const nextMonth = String(date.getMonth() + 1).padStart(2, "0");
+  const nextDay = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${nextMonth}-${nextDay}`;
 }
 
 function getLaundryServiceAccess(laundry) {
