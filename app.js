@@ -70,6 +70,7 @@ const dict = {
     noNotifications: "No notifications",
     markRead: "Mark read",
     orders: "Customers",
+    searchByCode: "Search by code",
     history: "History",
     completed: "Completed",
     complete: "Complete",
@@ -197,6 +198,7 @@ const dict = {
     noNotifications: "ئاگادارکردنەوە نییە",
     markRead: "خوێندراوە",
     orders: "کڕیارەکان",
+    searchByCode: "گەڕان بە کۆد",
     history: "لیستی داواکاریەکان",
     completed: "تەواوبوو",
     complete: "تەواوکرا",
@@ -324,6 +326,7 @@ const dict = {
     noNotifications: "لا توجد إشعارات",
     markRead: "تمت القراءة",
     orders: "الزبائن",
+    searchByCode: "بحث بالكود",
     history: "السجل",
     completed: "مكتمل",
     complete: "إكمال",
@@ -492,6 +495,11 @@ document.addEventListener("input", (event) => {
   const input = event.target.closest('input[name^="ironQty_"]');
   if (input) {
     updatePartsTotal(event.target.closest("form"));
+  }
+
+  const codeSearch = event.target.closest('[data-action="search-owner-customer-code"]');
+  if (codeSearch) {
+    searchOwnerCustomerByCode(codeSearch.value);
   }
 });
 
@@ -752,7 +760,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=43" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=44" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -768,7 +776,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=43" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=44" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -984,6 +992,10 @@ function renderOwnerDashboard() {
       <section class="panel form-grid" aria-label="${escapeHtml(t("orders"))}">
         <h2 class="panel-title">${escapeHtml(t("orders"))}</h2>
         ${customerGroups.length ? `
+          <label class="field compact-search-field">
+            <span>${escapeHtml(t("searchByCode"))}</span>
+            <input class="input mini-input" data-action="search-owner-customer-code" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" placeholder="${escapeHtml(t("customerCode"))}" />
+          </label>
           <label class="field">
             <span>${escapeHtml(t("existingCustomer"))}</span>
             <select class="select" data-action="select-owner-customer">
@@ -1194,6 +1206,20 @@ function selectOwnerCustomer(customerCode) {
     selectedCustomerCode: localizedNumber(customerCode)
   };
   render();
+}
+
+function searchOwnerCustomerByCode(value) {
+  const code = localizedNumber(value);
+  if (!isValidCustomerCode(code)) return;
+
+  const laundryId = view.session?.laundryId;
+  const exists = data.customers.some((customer) =>
+    customer.laundryId === laundryId && customer.code === code
+  ) || data.orders.some((order) =>
+    order.laundryId === laundryId && order.customerCode === code
+  );
+
+  if (exists) selectOwnerCustomer(code);
 }
 
 function renderSelectedCustomerInfo(group) {
@@ -2027,11 +2053,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=43",
-        badge: "assets/icon.svg?v=43"
+        icon: "assets/icon.svg?v=44",
+        badge: "assets/icon.svg?v=44"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=43" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=44" });
     }
   });
 }

@@ -352,6 +352,10 @@ button {
   line-height: 1.35;
 }
 
+.compact-search-field {
+  width: min(100%, 220px);
+}
+
 .input,
 .select {
   width: 100%;
