@@ -868,7 +868,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=57" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=58" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -897,7 +897,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=57" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=58" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -913,7 +913,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=57" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=58" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1131,7 +1131,6 @@ function renderOwnerDashboard() {
           <span>${escapeHtml(t("customerCode"))}</span>
           <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" readonly required ${disabledAttr} />
         </label>
-        <button class="btn light" type="button" data-action="generate-customer-code" ${disabledAttr}>${icons.code}${escapeHtml(t("generateCode"))}</button>
         <button class="btn primary" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
       </form>
       <section class="panel form-grid" aria-label="${escapeHtml(t("orders"))}">
@@ -1154,6 +1153,9 @@ function renderOwnerDashboard() {
         ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       </section>
       ${renderUrgentCustomers(urgentGroups, blocked)}
+      ${selectedCustomer ? `
+        <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(selectedCustomer.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
+      ` : ""}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
       </div>
@@ -1307,7 +1309,6 @@ function renderOwnerCustomerGroup(group, blocked = false) {
         </label>
         <button class="btn light" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
       </form>
-      <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(group.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
     </article>
   `;
 }
@@ -2275,11 +2276,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=57",
-        badge: "assets/icon.svg?v=57"
+        icon: "assets/icon.svg?v=58",
+        badge: "assets/icon.svg?v=58"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=57" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=58" });
     }
   });
 }
