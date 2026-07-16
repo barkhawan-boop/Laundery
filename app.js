@@ -766,7 +766,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=45" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=46" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -782,7 +782,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=45" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=46" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -992,7 +992,7 @@ function renderOwnerDashboard() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("customerCode"))} · ${escapeHtml(t("codeRange"))}</span>
-          <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" required ${disabledAttr} />
+          <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" readonly required ${disabledAttr} />
         </label>
         <button class="btn light" type="button" data-action="generate-customer-code" ${disabledAttr}>${icons.code}${escapeHtml(t("generateCode"))}</button>
         <button class="btn primary" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
@@ -2065,11 +2065,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=45",
-        badge: "assets/icon.svg?v=45"
+        icon: "assets/icon.svg?v=46",
+        badge: "assets/icon.svg?v=46"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=45" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=46" });
     }
   });
 }
