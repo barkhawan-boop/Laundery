@@ -900,6 +900,15 @@ button {
   font-size: 0.83rem;
 }
 
+.customer-info-panel {
+  background: #eef5ff;
+  border-color: rgba(7, 88, 216, 0.18);
+}
+
+.customer-info-panel strong {
+  color: var(--brand-strong);
+}
+
 .receipt {
   display: inline-flex;
   align-items: center;

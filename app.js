@@ -752,7 +752,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=42" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=43" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -768,7 +768,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=42" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=43" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -967,17 +967,6 @@ function renderOwnerDashboard() {
       ${renderNotices(notices)}
       <form class="panel form-grid" data-form="add-customer">
         <h2 class="panel-title">${icons.add}<span>${escapeHtml(t("addCustomer"))}</span></h2>
-        ${customerGroups.length ? `
-          <label class="field">
-            <span>${escapeHtml(t("existingCustomer"))}</span>
-            <select class="select" data-action="select-existing-customer" ${disabledAttr}>
-              <option value="">${escapeHtml(t("newCustomer"))}</option>
-              ${customerGroups.map((group) => `
-                <option value="${escapeHtml(customerSelectValue(group))}">${escapeHtml(group.name)} - ${escapeHtml(t("codeLabel"))}: ${group.customerCode}</option>
-              `).join("")}
-            </select>
-          </label>
-        ` : ""}
         <label class="field">
           <span>${escapeHtml(t("customerName"))} (${escapeHtml(t("optional"))})</span>
           <input class="input" name="customerName" autocomplete="name" ${disabledAttr} />
@@ -1003,6 +992,7 @@ function renderOwnerDashboard() {
               `).join("")}
             </select>
           </label>
+          ${selectedCustomer ? renderSelectedCustomerInfo(selectedCustomer) : ""}
           ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked) : ""}
         ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       </section>
@@ -1204,6 +1194,16 @@ function selectOwnerCustomer(customerCode) {
     selectedCustomerCode: localizedNumber(customerCode)
   };
   render();
+}
+
+function renderSelectedCustomerInfo(group) {
+  return `
+    <div class="notice customer-info-panel">
+      <strong>${escapeHtml(group.name)}</strong>
+      <span>${escapeHtml(t("codeLabel"))}: ${escapeHtml(group.customerCode)} · ${group.orders.length} ${escapeHtml(t("submissions"))}</span>
+      ${group.phone ? `<span>${escapeHtml(t("customerPhone"))}: ${escapeHtml(group.phone)}</span>` : ""}
+    </div>
+  `;
 }
 
 function renderOwnerOrderCard(order, blocked = false) {
@@ -1648,6 +1648,7 @@ function addCustomer(formData, form) {
   });
 
   if (!hasParts) {
+    view.selectedCustomerCode = customerCode;
     saveData();
     form.reset();
     toast(t("customerRegistered"));
@@ -1677,6 +1678,7 @@ function addCustomer(formData, form) {
   };
 
   data.orders.push(order);
+  view.selectedCustomerCode = customerCode;
 
   if (urgent) {
     addNotice({
@@ -2025,11 +2027,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=42",
-        badge: "assets/icon.svg?v=42"
+        icon: "assets/icon.svg?v=43",
+        badge: "assets/icon.svg?v=43"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=42" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=43" });
     }
   });
 }
