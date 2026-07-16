@@ -1,6 +1,7 @@
 const STORAGE_KEY = "laundery-erbil-state-v1";
 const ADMIN_PIN = "0000";
 const DEFAULT_LAUNDRY_SERVICES = "Clothes Cleaning & Ironing, Dry Cleaning & Laundry, Blanket Washing, Cleaning, Drying";
+const REMEMBER_ADMIN_SESSION = false;
 
 const languages = {
   en: { label: "English", dir: "ltr" },
@@ -766,7 +767,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=48" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=49" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -782,7 +783,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=48" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=49" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -826,7 +827,7 @@ function renderNearestLaundry() {
       <section class="panel compact-panel">
         <p class="subtle no-margin">${escapeHtml(t("nearestIntro"))}</p>
         <button class="btn primary" data-action="find-nearest" ${nearestState.loading ? "disabled" : ""}>${icons.pin}${escapeHtml(nearestState.loading ? t("locationNeeded") : t("useMyLocation"))}</button>
-        <a class="btn light" href="https://www.google.com/maps/search/laundry+near+me+Erbil" target="_blank" rel="noopener">${icons.pin}Google Maps</a>
+        <a class="btn light" href="https://www.google.com/maps/search/laundry+near+me+Erbil" target="_blank" rel="noopener noreferrer">${icons.pin}Google Maps</a>
         ${nearestState.error ? `<div class="notice service-blocked"><strong>${escapeHtml(nearestState.error)}</strong></div>` : ""}
       </section>
       <section class="list" aria-label="${escapeHtml(t("nearestLaundry"))}">
@@ -848,7 +849,7 @@ function renderNearestResults() {
             <p class="meta">${escapeHtml(t("noNearbyLaundries"))}</p>
           </div>
         </div>
-        <a class="btn primary" href="https://www.google.com/maps/search/laundry+near+me+Erbil" target="_blank" rel="noopener">${icons.pin}Google Maps</a>
+        <a class="btn primary" href="https://www.google.com/maps/search/laundry+near+me+Erbil" target="_blank" rel="noopener noreferrer">${icons.pin}Google Maps</a>
       </article>
     `;
   }
@@ -866,14 +867,14 @@ function renderNearestResults() {
           <div>
             <h3 class="card-title">${escapeHtml(result.laundry.name)}</h3>
             ${distanceLine}
-            ${result.laundry.ownerPhone ? `<p class="meta">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(result.laundry.ownerPhone)}">${escapeHtml(result.laundry.ownerPhone)}</a></p>` : ""}
+            ${result.laundry.ownerPhone ? `<p class="meta">${escapeHtml(t("ownerPhone"))}: <a href="${safePhoneHref(result.laundry.ownerPhone)}">${escapeHtml(result.laundry.ownerPhone)}</a></p>` : ""}
             ${result.laundry.location ? `<p class="meta">${escapeHtml(t("location"))}: ${renderLocationValue(result.laundry.location)}</p>` : `<p class="meta">${escapeHtml(t("laundryLocationMissing"))}</p>`}
           </div>
           <span class="badge done">${icons.pin}${escapeHtml(t("nearestLaundry"))}</span>
         </div>
         <div class="button-row">
-          <a class="btn light" href="${escapeHtml(mapUrl)}" target="_blank" rel="noopener">${icons.pin}Google Maps</a>
-          <a class="btn primary" href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener">${icons.truck}Directions</a>
+          <a class="btn light" href="${escapeHtml(mapUrl)}" target="_blank" rel="noopener noreferrer">${icons.pin}Google Maps</a>
+          <a class="btn primary" href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener noreferrer">${icons.truck}Directions</a>
         </div>
       </article>
     `;
@@ -1647,7 +1648,7 @@ function adminLogin(formData) {
   }
 
   const session = { role: "admin" };
-  rememberSession(session);
+  if (REMEMBER_ADMIN_SESSION) rememberSession(session);
   view = { screen: "admin-dashboard", session };
   render();
 }
@@ -2080,11 +2081,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=48",
-        badge: "assets/icon.svg?v=48"
+        icon: "assets/icon.svg?v=49",
+        badge: "assets/icon.svg?v=49"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=48" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=49" });
     }
   });
 }
@@ -2221,7 +2222,7 @@ function renderLaundryContact(laundry) {
         <p class="subtle no-margin">${escapeHtml(t("laundryContact"))}</p>
       </div>
       <div class="contact-grid">
-        ${laundry.ownerPhone ? `<p class="contact-line">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(laundry.ownerPhone)}">${escapeHtml(laundry.ownerPhone)}</a></p>` : ""}
+        ${laundry.ownerPhone ? `<p class="contact-line">${escapeHtml(t("ownerPhone"))}: <a href="${safePhoneHref(laundry.ownerPhone)}">${escapeHtml(laundry.ownerPhone)}</a></p>` : ""}
         ${laundry.location ? `<p class="contact-line">${escapeHtml(t("location"))}: ${renderLocationValue(laundry.location)}</p>` : ""}
       </div>
       ${services.length ? `
@@ -2247,8 +2248,13 @@ function renderLocationValue(location) {
   const value = String(location || "");
   const safeValue = escapeHtml(value);
   return /^https?:\/\//i.test(value)
-    ? `<a href="${safeValue}" target="_blank" rel="noopener">${safeValue}</a>`
+    ? `<a href="${safeValue}" target="_blank" rel="noopener noreferrer">${safeValue}</a>`
     : safeValue;
+}
+
+function safePhoneHref(phone) {
+  const cleaned = String(phone || "").replace(/[^\d+]/g, "");
+  return `tel:${escapeHtml(cleaned)}`;
 }
 
 function googleMapsSearchUrl(laundry) {
@@ -2407,7 +2413,7 @@ function restoreSavedSession() {
     };
   }
 
-  if (session.role === "admin") {
+  if (session.role === "admin" && REMEMBER_ADMIN_SESSION) {
     return { screen: "admin-dashboard", session: { role: "admin" } };
   }
 
