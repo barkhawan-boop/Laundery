@@ -29,6 +29,7 @@ const dict = {
     adminLogin: "Admin sign in",
     addCustomer: "Add customer",
     newSubmission: "New submission",
+    orderName: "Order name",
     submissions: "Submissions",
     customerName: "Customer name",
     customerPhone: "Customer phone",
@@ -154,7 +155,8 @@ const dict = {
     customerLogin: "چوونەژوورەوەی کڕیار",
     adminLogin: "چوونەژوورەوەی ئەدمین",
     addCustomer: "زیادکردنی کڕیار",
-    newSubmission: "سپاردنی نوێ",
+    newSubmission: "داواکاری نوێ",
+    orderName: "ناوی داواکاری",
     submissions: "سپاردنەکان",
     customerName: "ناوی کڕیار",
     customerPhone: "ژمارەی مۆبایلی کڕیار",
@@ -281,6 +283,7 @@ const dict = {
     adminLogin: "دخول المشرف",
     addCustomer: "إضافة زبون",
     newSubmission: "تسليم جديد",
+    orderName: "اسم الطلب",
     submissions: "التسليمات",
     customerName: "اسم الزبون",
     customerPhone: "رقم هاتف الزبون",
@@ -693,6 +696,7 @@ function normalizeLaundry(laundry) {
 function normalizeOrder(order) {
   return {
     ...order,
+    orderName: order.orderName || "",
     customerPhone: order.customerPhone || "",
     serviceSelections: Array.isArray(order.serviceSelections) ? order.serviceSelections : [],
     ironingAmounts: order.ironingAmounts || {},
@@ -748,7 +752,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=40" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=41" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -764,7 +768,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=40" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=41" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1138,6 +1142,10 @@ function renderOwnerCustomerGroup(group, blocked = false) {
         <input type="hidden" name="customerName" value="${escapeHtml(latest?.customerName || group.name || "")}" />
         <input type="hidden" name="customerPhone" value="${escapeHtml(latest?.customerPhone || group.phone || "")}" />
         <h4 class="mini-title">${escapeHtml(t("newSubmission"))}</h4>
+        <label class="field">
+          <span>${escapeHtml(t("orderName"))} (${escapeHtml(t("optional"))})</span>
+          <input class="input" name="orderName" autocomplete="off" ${disabledAttr} />
+        </label>
         ${renderServiceChoiceTable(disabledAttr)}
         <label class="check-field">
           <input name="urgent" type="checkbox" ${disabledAttr} />
@@ -1202,11 +1210,13 @@ function renderOwnerOrderCard(order, blocked = false) {
   const name = order.customerName || `${t("customer")} ${order.customerCode}`;
   const statusClass = order.done ? "done" : order.urgent || order.urgentByCustomer ? "urgent" : "";
   const deliveryLocationLine = renderDeliveryLocationLine(order);
+  const orderNameLine = order.orderName ? `<p class="contact-line">${escapeHtml(t("orderName"))}: ${escapeHtml(order.orderName)}</p>` : "";
   return `
     <article class="submission-item ${statusClass}">
       <div class="card-head">
         <div>
           <h4 class="card-title">${escapeHtml(formatDate(order.createdAt))}</h4>
+          ${orderNameLine}
           ${deliveryLocationLine}
           ${renderOrderServices(order)}
           <p class="meta">${escapeHtml(t("codeLabel"))}: ${order.customerCode} · ${order.parts} ${escapeHtml(t("partsLabel"))} · ${formatDate(order.createdAt)}</p>
@@ -1378,6 +1388,7 @@ function renderCustomerStatus(latest, active, laundry) {
   return `
     <div class="status-block waiting">
       <strong>${escapeHtml(t("waiting"))}</strong>
+      ${target.orderName ? `<span>${escapeHtml(t("orderName"))}: ${escapeHtml(target.orderName)}</span>` : ""}
       ${renderOrderServices(target)}
       <span>${target.parts} ${escapeHtml(t("partsLabel"))} · ${escapeHtml(formatDate(target.createdAt))}</span>
       <button class="btn coral" data-action="customer-urgent" ${urgentSent || target.done ? "disabled" : ""}>${icons.alert}${escapeHtml(urgentSent ? t("urgentSent") : t("requestUrgent"))}</button>
@@ -1415,6 +1426,7 @@ function renderHistoryCard(order, laundry) {
       <div class="card-head">
         <div>
           <h3 class="card-title">${escapeHtml(laundry?.name || t("laundryName"))}</h3>
+          ${order.orderName ? `<p class="contact-line">${escapeHtml(t("orderName"))}: ${escapeHtml(order.orderName)}</p>` : ""}
           ${renderOrderServices(order)}
           <p class="meta">${escapeHtml(formatDate(order.createdAt))} · ${order.parts} ${escapeHtml(t("partsLabel"))}</p>
         </div>
@@ -1577,6 +1589,7 @@ function addCustomer(formData, form) {
   const parts = localizedNumber(partsValue);
   const customerName = String(formData.get("customerName") || "").trim();
   const customerPhone = String(formData.get("customerPhone") || "").trim();
+  const orderName = String(formData.get("orderName") || "").trim();
   const serviceDetails = collectServiceDetails(formData);
   const urgent = formData.get("urgent") === "on";
   const laundry = findLaundry(laundryId);
@@ -1623,6 +1636,7 @@ function addCustomer(formData, form) {
     id: crypto.randomUUID(),
     laundryId,
     customerName: savedCustomer.name,
+    orderName,
     customerPhone: savedCustomer.phone,
     customerCode,
     parts,
@@ -1988,11 +2002,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=40",
-        badge: "assets/icon.svg?v=40"
+        icon: "assets/icon.svg?v=41",
+        badge: "assets/icon.svg?v=41"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=40" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=41" });
     }
   });
 }
