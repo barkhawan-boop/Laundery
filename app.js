@@ -1,5 +1,6 @@
 const STORAGE_KEY = "laundery-erbil-state-v1";
 const ADMIN_PIN = "0000";
+const DEFAULT_LAUNDRY_SERVICES = "Clothes Cleaning & Ironing, Dry Cleaning & Laundry, Blanket Washing, Cleaning, Drying";
 
 const languages = {
   en: { label: "English", dir: "ltr" },
@@ -36,12 +37,33 @@ const dict = {
     ownerPhone: "Owner phone",
     location: "Location",
     laundryContact: "Laundry contact",
+    services: "Services",
+    servicesHint: "Separate services with commas",
+    serviceChoices: "Required services",
+    clothes: "Clothes",
+    blanket: "Blanket",
+    curtain: "Curtain",
+    drying: "Drying",
+    washing: "Washing",
+    washingDrying: "Washing + drying",
+    ironing: "Ironing",
+    ironingAmount: "Ironing amount",
+    findNearestLaundry: "Find nearest laundry",
+    nearestLaundry: "Nearest laundry",
+    useMyLocation: "Use my location",
+    nearestIntro: "Use your current location to find laundries closest to you.",
+    distanceAway: "away",
+    locationNeeded: "Location permission is needed",
+    laundryLocationMissing: "No map location saved for this laundry",
+    noNearbyLaundries: "No laundries with map locations yet",
+    locationHint: "Use a Google Maps link or coordinates like 36.1911, 44.0092",
     optional: "optional",
     clothesParts: "Clothes parts",
     markUrgent: "Urgent",
     add: "Add",
     active: "Active",
     urgent: "Urgent",
+    urgentCustomers: "Urgent customers",
     readyToday: "Ready today",
     notifications: "Notifications",
     noNotifications: "No notifications",
@@ -70,9 +92,9 @@ const dict = {
     serviceActive: "Service active",
     serviceStopped: "Service stopped",
     delivery: "Delivery",
-    deliveryEnabled: "Delivery on",
-    deliveryDisabled: "Delivery off",
-    enableDelivery: "Enable delivery",
+    deliveryEnabled: "Delivery available",
+    deliveryDisabled: "No delivery",
+    enableDelivery: "Delivery",
     saveDelivery: "Save delivery",
     requestDelivery: "Request delivery",
     deliveryRequested: "Delivery request sent",
@@ -127,7 +149,7 @@ const dict = {
     ownerCode: "کۆدی خاوەن",
     customerCode: "کۆدی کڕیار",
     adminPin: "پینی ئەدمین",
-    ownerLogin: "چوونەژوورەوەی خاوەن",
+    ownerLogin: "چوونە ژوورەوەی خاوەن کارەکان",
     customerLogin: "چوونەژوورەوەی کڕیار",
     adminLogin: "چوونەژوورەوەی ئەدمین",
     addCustomer: "زیادکردنی کڕیار",
@@ -140,18 +162,39 @@ const dict = {
     ownerPhone: "ژمارەی مۆبایلی خاوەن",
     location: "شوێن",
     laundryContact: "پەیوەندی لاندری",
+    services: "خزمەتگوزارییەکان",
+    servicesHint: "خزمەتگوزارییەکان بە کۆما جیا بکەوە",
+    serviceChoices: "خزمەتگوزارییە پێویستەکان",
+    clothes: "جل",
+    blanket: "بەتانی",
+    curtain: "پەردە",
+    drying: "وشککردن",
+    washing: "شوشتن",
+    washingDrying: "شوشتن و وشککردن",
+    ironing: "ئوتووکردن",
+    ironingAmount: "ژمارەی ئوتووکردن",
+    findNearestLaundry: "نزیکترین لاندری بدۆزەوە",
+    nearestLaundry: "نزیکترین لاندری",
+    useMyLocation: "شوێنی من بەکاربهێنە",
+    nearestIntro: "شوێنی ئێستات بەکاربهێنە بۆ دۆزینەوەی نزیکترین لاندری.",
+    distanceAway: "دوورە",
+    locationNeeded: "پێویستە ڕێگە بە شوێن بدەیت",
+    laundryLocationMissing: "شوێنی نەخشە بۆ ئەم لاندرییە تۆمار نەکراوە",
+    noNearbyLaundries: "هێشتا هیچ لاندرییەک شوێنی نەخشەی نییە",
+    locationHint: "لینکی Google Maps یان کۆردینات وەک 36.1911, 44.0092 بەکاربهێنە",
     optional: "ئارەزوومەندانە",
     clothesParts: "ژمارەی پارچە جل",
     markUrgent: "پەلە",
     add: "زیادکردن",
     active: "چالاک",
     urgent: "پەلە",
+    urgentCustomers: "کڕیارە پەلەکان",
     readyToday: "ئەمڕۆ ئامادەبوو",
     notifications: "ئاگادارکردنەوەکان",
     noNotifications: "ئاگادارکردنەوە نییە",
     markRead: "خوێندراوە",
     orders: "کڕیارەکان",
-    history: "مێژوو",
+    history: "لیستی داواکاریەکان",
     completed: "تەواوبوو",
     complete: "تەواوکرا",
     ready: "جلەکان ئامادەن",
@@ -174,9 +217,9 @@ const dict = {
     serviceActive: "خزمەتگوزاری چالاکە",
     serviceStopped: "خزمەتگوزاری وەستاوە",
     delivery: "گەیاندن",
-    deliveryEnabled: "گەیاندن چالاکە",
-    deliveryDisabled: "گەیاندن داخراوە",
-    enableDelivery: "چالاککردنی گەیاندن",
+    deliveryEnabled: "گەیاندن هەیە",
+    deliveryDisabled: "گەیاندن نیە",
+    enableDelivery: "گەیاندن",
     saveDelivery: "پاشەکەوتکردنی گەیاندن",
     requestDelivery: "داوای گەیاندن",
     deliveryRequested: "داوای گەیاندن نێردرا",
@@ -244,12 +287,33 @@ const dict = {
     ownerPhone: "هاتف صاحب المغسلة",
     location: "الموقع",
     laundryContact: "معلومات المغسلة",
+    services: "الخدمات",
+    servicesHint: "افصل الخدمات بفواصل",
+    serviceChoices: "الخدمات المطلوبة",
+    clothes: "ملابس",
+    blanket: "بطانية",
+    curtain: "ستارة",
+    drying: "تجفيف",
+    washing: "غسل",
+    washingDrying: "غسل وتجفيف",
+    ironing: "كي",
+    ironingAmount: "عدد الكي",
+    findNearestLaundry: "اعثر على أقرب مغسلة",
+    nearestLaundry: "أقرب مغسلة",
+    useMyLocation: "استخدم موقعي",
+    nearestIntro: "استخدم موقعك الحالي للعثور على أقرب المغاسل.",
+    distanceAway: "بعيد",
+    locationNeeded: "يجب السماح بالموقع",
+    laundryLocationMissing: "لا يوجد موقع خريطة لهذه المغسلة",
+    noNearbyLaundries: "لا توجد مغاسل لديها موقع خريطة بعد",
+    locationHint: "استخدم رابط Google Maps أو إحداثيات مثل 36.1911, 44.0092",
     optional: "اختياري",
     clothesParts: "عدد قطع الملابس",
     markUrgent: "مستعجل",
     add: "إضافة",
     active: "نشط",
     urgent: "مستعجل",
+    urgentCustomers: "الزبائن المستعجلون",
     readyToday: "جاهز اليوم",
     notifications: "الإشعارات",
     noNotifications: "لا توجد إشعارات",
@@ -278,9 +342,9 @@ const dict = {
     serviceActive: "الخدمة فعالة",
     serviceStopped: "الخدمة متوقفة",
     delivery: "التوصيل",
-    deliveryEnabled: "التوصيل مفعل",
-    deliveryDisabled: "التوصيل متوقف",
-    enableDelivery: "تفعيل التوصيل",
+    deliveryEnabled: "التوصيل متوفر",
+    deliveryDisabled: "لا يوجد توصيل",
+    enableDelivery: "التوصيل",
     saveDelivery: "حفظ التوصيل",
     requestDelivery: "طلب التوصيل",
     deliveryRequested: "تم إرسال طلب التوصيل",
@@ -340,6 +404,7 @@ let data = loadData();
 let view = getInitialView();
 let adminTapCount = 0;
 let adminTapTimer = null;
+let nearestState = { loading: false, searched: false, error: "", results: [] };
 
 const app = document.querySelector("#app");
 const toastStack = document.querySelector("#toastStack");
@@ -392,6 +457,9 @@ document.addEventListener("click", (event) => {
   if (action === "use-current-location") {
     fillCurrentDeliveryLocation();
   }
+  if (action === "find-nearest") {
+    findNearestLaundries();
+  }
   if (action === "generate-code") {
     const input = document.querySelector("#adminLaundryCode");
     if (input) input.value = String(generateLaundryCode());
@@ -406,9 +474,12 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("change", (event) => {
   const select = event.target.closest('[data-action="select-existing-customer"]');
-  if (!select) return;
+  const ownerCustomerSelect = event.target.closest('[data-action="select-owner-customer"]');
+  const deliveryToggle = event.target.closest('[data-action="toggle-delivery"]');
 
-  fillExistingCustomer(select);
+  if (select) fillExistingCustomer(select);
+  if (ownerCustomerSelect) selectOwnerCustomer(ownerCustomerSelect.value);
+  if (deliveryToggle) updateDelivery(deliveryToggle.checked);
 });
 
 document.addEventListener("keydown", (event) => {
@@ -435,7 +506,6 @@ document.addEventListener("submit", (event) => {
   if (type === "add-customer" || type === "add-submission") addCustomer(formData, form);
   if (type === "save-laundry") saveLaundry(formData, form);
   if (type === "update-laundry-service") updateLaundryService(formData);
-  if (type === "update-delivery") updateDelivery(formData);
 });
 
 function loadData() {
@@ -458,6 +528,7 @@ function loadData() {
         code: "1842",
         ownerPhone: "07504558922",
         location: "Erbil",
+        services: DEFAULT_LAUNDRY_SERVICES,
         serviceDisabled: false,
         deliveryEnabled: false,
         activeFrom: "",
@@ -470,6 +541,7 @@ function loadData() {
         code: "2760",
         ownerPhone: "",
         location: "Erbil",
+        services: DEFAULT_LAUNDRY_SERVICES,
         serviceDisabled: false,
         deliveryEnabled: false,
         activeFrom: "",
@@ -562,7 +634,7 @@ function normalizeCustomers(state) {
   });
 
   sourceOrders.forEach((order) => {
-    const code = Number(order.customerCode);
+    const code = localizedNumber(order.customerCode);
     if (!order.laundryId || !isValidCustomerCode(code)) return;
 
     const key = customerKey(order.laundryId, code);
@@ -588,7 +660,7 @@ function normalizeCustomer(customer) {
     laundryId: customer.laundryId || "",
     name: customer.name || customer.customerName || "",
     phone: customer.phone || customer.customerPhone || "",
-    code: Number(customer.code ?? customer.customerCode),
+    code: localizedNumber(customer.code ?? customer.customerCode),
     createdAt: customer.createdAt || Date.now(),
     updatedAt: customer.updatedAt || customer.createdAt || Date.now()
   };
@@ -599,6 +671,7 @@ function normalizeLaundry(laundry) {
     ...laundry,
     ownerPhone: laundry.ownerPhone || "",
     location: laundry.location || "",
+    services: laundry.services || DEFAULT_LAUNDRY_SERVICES,
     serviceDisabled: Boolean(laundry.serviceDisabled),
     deliveryEnabled: Boolean(laundry.deliveryEnabled),
     activeFrom: laundry.activeFrom || "",
@@ -610,6 +683,8 @@ function normalizeOrder(order) {
   return {
     ...order,
     customerPhone: order.customerPhone || "",
+    serviceSelections: Array.isArray(order.serviceSelections) ? order.serviceSelections : [],
+    ironingAmounts: order.ironingAmounts || {},
     deliveryRequested: Boolean(order.deliveryRequested),
     deliveryRequestedAt: order.deliveryRequestedAt || null,
     deliveryLocation: order.deliveryLocation || ""
@@ -645,6 +720,7 @@ function renderScreen() {
   if (view.screen === "language") return renderLanguage();
   if (view.screen === "owner-login") return renderOwnerLogin();
   if (view.screen === "customer-login") return renderCustomerLogin();
+  if (view.screen === "nearest-laundry") return renderNearestLaundry();
   if (view.screen === "admin-login") return renderAdminLogin();
   if (view.screen === "owner-dashboard") return renderOwnerDashboard();
   if (view.screen === "customer-dashboard") return renderCustomerDashboard();
@@ -652,7 +728,7 @@ function renderScreen() {
   return renderRoleChoice();
 }
 
-function renderTopbar({ title = t("appName"), subtitle = t("city"), back = true, secretAdmin = false } = {}) {
+function renderTopbar({ title = t("appName"), subtitle = "", back = true, secretAdmin = false } = {}) {
   const brandOpen = secretAdmin
     ? `<div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">`
     : `<div class="brand">`;
@@ -663,7 +739,7 @@ function renderTopbar({ title = t("appName"), subtitle = t("city"), back = true,
       ${brandOpen}
         <img class="brand-mark" src="assets/icon.svg" alt="" />
         <div class="brand-text">
-          <div class="eyebrow">${escapeHtml(subtitle)}</div>
+          ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
         </div>
       ${brandClose}
@@ -679,7 +755,6 @@ function renderLanguage() {
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
           <img class="brand-mark" src="assets/icon.svg" alt="" />
           <div class="brand-text">
-            <div class="eyebrow">${escapeHtml(t("city"))}</div>
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
         </div>
@@ -703,19 +778,54 @@ function renderRoleChoice() {
       <div class="role-grid">
         <button class="btn primary" data-action="screen" data-screen="owner-login">${icons.owner}${escapeHtml(t("owner"))}</button>
         <button class="btn blue" data-action="screen" data-screen="customer-login">${icons.customer}${escapeHtml(t("customer"))}</button>
+        <button class="btn light" data-action="screen" data-screen="nearest-laundry">${icons.pin}${escapeHtml(t("findNearestLaundry"))}</button>
       </div>
       <div class="panel">
         <div class="panel-title">
           <strong>${escapeHtml(t("notificationPermission"))}</strong>
           <button class="btn light" data-action="enable-alerts">${icons.bell}${escapeHtml(t("enableAlerts"))}</button>
         </div>
-        <div class="subtle">${escapeHtml(t("demoPin"))}</div>
       </div>
       <div class="footer-actions">
         <button class="btn ghost" data-action="change-language">${escapeHtml(t("changeLanguage"))}</button>
       </div>
     </section>
   `;
+}
+
+function renderNearestLaundry() {
+  return `
+    <section class="screen">
+      ${renderTopbar({ title: t("nearestLaundry") })}
+      <section class="panel compact-panel">
+        <p class="subtle no-margin">${escapeHtml(t("nearestIntro"))}</p>
+        <button class="btn primary" data-action="find-nearest" ${nearestState.loading ? "disabled" : ""}>${icons.pin}${escapeHtml(nearestState.loading ? t("locationNeeded") : t("useMyLocation"))}</button>
+        ${nearestState.error ? `<div class="notice service-blocked"><strong>${escapeHtml(nearestState.error)}</strong></div>` : ""}
+      </section>
+      <section class="list" aria-label="${escapeHtml(t("nearestLaundry"))}">
+        ${renderNearestResults()}
+      </section>
+    </section>
+  `;
+}
+
+function renderNearestResults() {
+  if (!nearestState.searched && !nearestState.results.length) return "";
+  if (!nearestState.results.length) return `<div class="empty">${escapeHtml(t("noNearbyLaundries"))}</div>`;
+
+  return nearestState.results.map((result) => `
+    <article class="card">
+      <div class="card-head">
+        <div>
+          <h3 class="card-title">${escapeHtml(result.laundry.name)}</h3>
+          <p class="meta">${formatDistance(result.distanceKm)} ${escapeHtml(t("distanceAway"))}</p>
+          ${result.laundry.ownerPhone ? `<p class="meta">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(result.laundry.ownerPhone)}">${escapeHtml(result.laundry.ownerPhone)}</a></p>` : ""}
+          ${result.laundry.location ? `<p class="meta">${escapeHtml(t("location"))}: ${renderLocationValue(result.laundry.location)}</p>` : `<p class="meta">${escapeHtml(t("laundryLocationMissing"))}</p>`}
+        </div>
+        <span class="badge done">${icons.pin}${escapeHtml(t("nearestLaundry"))}</span>
+      </div>
+    </article>
+  `).join("");
 }
 
 function renderOwnerLogin() {
@@ -754,7 +864,7 @@ function renderCustomerLogin() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("customerCode"))}</span>
-          <input class="input" name="code" type="number" min="0" max="500" inputmode="numeric" required />
+          <input class="input" name="code" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" required />
         </label>
         <button class="btn blue" type="submit">${icons.customer}${escapeHtml(t("signIn"))}</button>
       </form>
@@ -792,6 +902,10 @@ function renderOwnerDashboard() {
   const blocked = serviceAccess.blocked;
   const disabledAttr = blocked ? "disabled" : "";
   const customerGroups = groupCustomersByLaundry(laundry.id, orders);
+  const selectedCustomer = selectedOwnerCustomerGroup(laundry.id, customerGroups);
+  const urgentGroups = customerGroups.filter((group) =>
+    group.orders.some((order) => !order.done && (order.urgent || order.urgentByCustomer))
+  );
 
   return `
     <section class="screen">
@@ -802,17 +916,16 @@ function renderOwnerDashboard() {
         <div class="stat"><strong>${urgent.length}</strong><span>${escapeHtml(t("urgent"))}</span></div>
         <div class="stat"><strong>${doneToday}</strong><span>${escapeHtml(t("readyToday"))}</span></div>
       </div>
-      <form class="panel compact-panel" data-form="update-delivery">
-        <div class="panel-title">
-          <strong>${icons.truck}${escapeHtml(t("delivery"))}</strong>
-          <span class="badge ${laundry.deliveryEnabled ? "done" : "info"}">${escapeHtml(t(laundry.deliveryEnabled ? "deliveryEnabled" : "deliveryDisabled"))}</span>
+      <section class="panel compact-panel">
+        <div class="delivery-toggle-row">
+          <span class="delivery-toggle-title">${icons.truck}${escapeHtml(t("enableDelivery"))}</span>
+          <label class="switch">
+            <input type="checkbox" data-action="toggle-delivery" ${laundry.deliveryEnabled ? "checked" : ""} ${disabledAttr} />
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
         </div>
-        <label class="check-field">
-          <input name="deliveryEnabled" type="checkbox" ${laundry.deliveryEnabled ? "checked" : ""} ${disabledAttr} />
-          <span>${escapeHtml(t("enableDelivery"))}</span>
-        </label>
-        <button class="btn light" type="submit" ${disabledAttr}>${icons.done}${escapeHtml(t("saveDelivery"))}</button>
-      </form>
+        <span class="delivery-status ${laundry.deliveryEnabled ? "on" : "off"}">${escapeHtml(t(laundry.deliveryEnabled ? "deliveryEnabled" : "deliveryDisabled"))}</span>
+      </section>
       ${renderNotices(notices)}
       <form class="panel form-grid" data-form="add-customer">
         <h2 class="panel-title">${icons.add}<span>${escapeHtml(t("addCustomer"))}</span></h2>
@@ -837,22 +950,25 @@ function renderOwnerDashboard() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("customerCode"))} · ${escapeHtml(t("codeRange"))}</span>
-          <input class="input" name="customerCode" type="number" min="0" max="500" inputmode="numeric" required ${disabledAttr} />
-        </label>
-        <label class="field">
-          <span>${escapeHtml(t("clothesParts"))}</span>
-          <input class="input" name="parts" type="number" min="1" inputmode="numeric" ${disabledAttr} />
-        </label>
-        <label class="check-field">
-          <input name="urgent" type="checkbox" ${disabledAttr} />
-          <span>${escapeHtml(t("markUrgent"))}</span>
+          <input class="input" name="customerCode" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" required ${disabledAttr} />
         </label>
         <button class="btn primary" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
       </form>
-      <section class="list" aria-label="${escapeHtml(t("orders"))}">
+      <section class="panel form-grid" aria-label="${escapeHtml(t("orders"))}">
         <h2 class="panel-title">${escapeHtml(t("orders"))}</h2>
-        ${customerGroups.length ? customerGroups.map((group) => renderOwnerCustomerGroup(group, blocked)).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+        ${customerGroups.length ? `
+          <label class="field">
+            <span>${escapeHtml(t("existingCustomer"))}</span>
+            <select class="select" data-action="select-owner-customer">
+              ${customerGroups.map((group) => `
+                <option value="${escapeHtml(group.customerCode)}" ${selectedCustomer?.customerCode === group.customerCode ? "selected" : ""}>${escapeHtml(group.name)} - ${escapeHtml(t("codeLabel"))}: ${group.customerCode}</option>
+              `).join("")}
+            </select>
+          </label>
+          ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked) : ""}
+        ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       </section>
+      ${renderUrgentCustomers(urgentGroups, blocked)}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
       </div>
@@ -920,6 +1036,12 @@ function renderAdminDashboard() {
         <label class="field">
           <span>${escapeHtml(t("location"))} (${escapeHtml(t("optional"))})</span>
           <input class="input" name="location" autocomplete="street-address" />
+          <small class="field-hint">${escapeHtml(t("locationHint"))}</small>
+        </label>
+        <label class="field">
+          <span>${escapeHtml(t("services"))}</span>
+          <input class="input" name="services" value="${escapeHtml(DEFAULT_LAUNDRY_SERVICES)}" />
+          <small class="field-hint">${escapeHtml(t("servicesHint"))}</small>
         </label>
         <div class="button-row">
           <label class="field">
@@ -984,8 +1106,9 @@ function renderOwnerCustomerGroup(group, blocked = false) {
         <h4 class="mini-title">${escapeHtml(t("newSubmission"))}</h4>
         <label class="field">
           <span>${escapeHtml(t("clothesParts"))}</span>
-          <input class="input" name="parts" type="number" min="1" inputmode="numeric" required ${disabledAttr} />
+          <input class="input" name="parts" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" required ${disabledAttr} />
         </label>
+        ${renderServiceChoiceTable(disabledAttr)}
         <label class="check-field">
           <input name="urgent" type="checkbox" ${disabledAttr} />
           <span>${escapeHtml(t("markUrgent"))}</span>
@@ -994,6 +1117,55 @@ function renderOwnerCustomerGroup(group, blocked = false) {
       </form>
     </article>
   `;
+}
+
+function renderUrgentCustomers(groups, blocked = false) {
+  return `
+    <section class="panel form-grid" aria-label="${escapeHtml(t("urgentCustomers"))}">
+      <h2 class="panel-title">${icons.alert}<span>${escapeHtml(t("urgentCustomers"))}</span></h2>
+      ${groups.length ? groups.map((group) => renderUrgentCustomerCard(group, blocked)).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+    </section>
+  `;
+}
+
+function renderUrgentCustomerCard(group, blocked = false) {
+  const urgentOrders = group.orders.filter((order) => !order.done && (order.urgent || order.urgentByCustomer));
+  const phoneLine = group.phone ? `<p class="meta">${escapeHtml(t("customerPhone"))}: ${escapeHtml(group.phone)}</p>` : "";
+
+  return `
+    <article class="card urgent">
+      <div class="card-head">
+        <div>
+          <h3 class="card-title">${escapeHtml(group.name)}</h3>
+          <p class="meta">${escapeHtml(t("codeLabel"))}: ${group.customerCode} آ· ${urgentOrders.length} ${escapeHtml(t("urgent"))}</p>
+          ${phoneLine}
+        </div>
+        <span class="badge urgent">${escapeHtml(t("urgent"))}</span>
+      </div>
+      <div class="submission-list">
+        ${urgentOrders.map((order) => renderOwnerOrderCard(order, blocked)).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function selectedOwnerCustomerGroup(laundryId, groups) {
+  if (!groups.length) return null;
+
+  const selectedCode = localizedNumber(view.selectedCustomerCode);
+  const selected = groups.find((group) => group.customerCode === selectedCode);
+  if (selected) return selected;
+
+  view.selectedCustomerCode = groups[0].customerCode;
+  return groups[0];
+}
+
+function selectOwnerCustomer(customerCode) {
+  view = {
+    ...view,
+    selectedCustomerCode: localizedNumber(customerCode)
+  };
+  render();
 }
 
 function renderOwnerOrderCard(order, blocked = false) {
@@ -1006,6 +1178,7 @@ function renderOwnerOrderCard(order, blocked = false) {
         <div>
           <h4 class="card-title">${escapeHtml(formatDate(order.createdAt))}</h4>
           ${deliveryLocationLine}
+          ${renderOrderServices(order)}
           <p class="meta">${escapeHtml(t("codeLabel"))}: ${order.customerCode} · ${order.parts} ${escapeHtml(t("partsLabel"))} · ${formatDate(order.createdAt)}</p>
         </div>
         <div class="badge-row">
@@ -1019,6 +1192,112 @@ function renderOwnerOrderCard(order, blocked = false) {
       </div>
     </article>
   `;
+}
+
+function serviceColumns() {
+  return [
+    { key: "clothes", label: t("clothes") },
+    { key: "blanket", label: t("blanket") },
+    { key: "curtain", label: t("curtain") }
+  ];
+}
+
+function serviceRows() {
+  return [
+    { key: "drying", label: t("drying") },
+    { key: "washing", label: t("washing") },
+    { key: "washingDrying", label: t("washingDrying") },
+    { key: "ironing", label: t("ironing") }
+  ];
+}
+
+function renderServiceChoiceTable(disabledAttr = "") {
+  const columns = serviceColumns();
+  const rows = serviceRows();
+
+  return `
+    <section class="service-choice">
+      <h4 class="mini-title">${escapeHtml(t("serviceChoices"))}</h4>
+      <div class="service-choice-table" role="table" aria-label="${escapeHtml(t("serviceChoices"))}">
+        <div class="service-choice-row service-choice-head" role="row">
+          <span role="columnheader"></span>
+          ${columns.map((column) => `<span role="columnheader">${escapeHtml(column.label)}</span>`).join("")}
+        </div>
+        ${rows.map((row) => `
+          <div class="service-choice-row" role="row">
+            <span role="rowheader">${escapeHtml(row.label)}</span>
+            ${columns.map((column) => `
+              <label class="service-check" title="${escapeHtml(`${row.label} - ${column.label}`)}">
+                <input type="checkbox" name="service_${row.key}_${column.key}" ${disabledAttr} />
+                <span></span>
+              </label>
+            `).join("")}
+          </div>
+        `).join("")}
+      </div>
+      <div class="ironing-amounts">
+        ${columns.map((column) => `
+          <label class="field">
+            <span>${escapeHtml(t("ironingAmount"))} - ${escapeHtml(column.label)}</span>
+            <input class="input mini-input" name="ironQty_${column.key}" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" ${disabledAttr} />
+          </label>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderOrderServices(order) {
+  const selections = Array.isArray(order.serviceSelections) ? order.serviceSelections : [];
+  const quantities = order.ironingAmounts || {};
+  const quantityEntries = serviceColumns()
+    .map((column) => ({ column, amount: localizedNumber(quantities[column.key]) }))
+    .filter((item) => Number.isFinite(item.amount) && item.amount > 0);
+
+  if (!selections.length && !quantityEntries.length) return "";
+
+  return `
+    <div class="service-summary">
+      <strong>${escapeHtml(t("serviceChoices"))}</strong>
+      ${selections.length ? `
+        <div class="service-pills">
+          ${selections.map((selection) => `<span class="service-pill">${escapeHtml(serviceLabel(selection.row))} - ${escapeHtml(serviceLabel(selection.column))}</span>`).join("")}
+        </div>
+      ` : ""}
+      ${quantityEntries.length ? `
+        <div class="service-pills">
+          ${quantityEntries.map(({ column, amount }) => `<span class="service-pill">${escapeHtml(t("ironingAmount"))}: ${escapeHtml(column.label)} ${amount}</span>`).join("")}
+        </div>
+      ` : ""}
+    </div>
+  `;
+}
+
+function serviceLabel(key) {
+  const found = [...serviceRows(), ...serviceColumns()].find((item) => item.key === key);
+  return found?.label || key;
+}
+
+function collectServiceDetails(formData) {
+  const selections = [];
+  const ironingAmounts = {};
+
+  serviceRows().forEach((row) => {
+    serviceColumns().forEach((column) => {
+      if (formData.get(`service_${row.key}_${column.key}`) === "on") {
+        selections.push({ row: row.key, column: column.key });
+      }
+    });
+  });
+
+  serviceColumns().forEach((column) => {
+    const amount = localizedNumber(formData.get(`ironQty_${column.key}`));
+    if (Number.isFinite(amount) && amount > 0) {
+      ironingAmounts[column.key] = amount;
+    }
+  });
+
+  return { selections, ironingAmounts };
 }
 
 function renderCustomerStatus(latest, active, laundry) {
@@ -1050,6 +1329,7 @@ function renderCustomerStatus(latest, active, laundry) {
   return `
     <div class="status-block waiting">
       <strong>${escapeHtml(t("waiting"))}</strong>
+      ${renderOrderServices(target)}
       <span>${target.parts} ${escapeHtml(t("partsLabel"))} · ${escapeHtml(formatDate(target.createdAt))}</span>
       <button class="btn coral" data-action="customer-urgent" ${urgentSent || target.done ? "disabled" : ""}>${icons.alert}${escapeHtml(urgentSent ? t("urgentSent") : t("requestUrgent"))}</button>
       ${deliveryButton}
@@ -1086,6 +1366,7 @@ function renderHistoryCard(order, laundry) {
       <div class="card-head">
         <div>
           <h3 class="card-title">${escapeHtml(laundry?.name || t("laundryName"))}</h3>
+          ${renderOrderServices(order)}
           <p class="meta">${escapeHtml(formatDate(order.createdAt))} · ${order.parts} ${escapeHtml(t("partsLabel"))}</p>
         </div>
         <div class="badge-row">
@@ -1111,6 +1392,7 @@ function renderLaundryAdminCard(laundry) {
           <p class="meta">${escapeHtml(t("ownerCode"))}: ${escapeHtml(laundry.code)}</p>
           ${laundry.ownerPhone ? `<p class="meta">${escapeHtml(t("ownerPhone"))}: ${escapeHtml(laundry.ownerPhone)}</p>` : ""}
           ${laundry.location ? `<p class="meta">${escapeHtml(t("location"))}: ${escapeHtml(laundry.location)}</p>` : ""}
+          ${laundry.services ? `<p class="meta">${escapeHtml(t("services"))}: ${escapeHtml(laundry.services)}</p>` : ""}
           <p class="meta">${escapeHtml(t("activeFrom"))}: ${escapeHtml(formatPlainDate(laundry.activeFrom) || "-")} · ${escapeHtml(t("activeTo"))}: ${escapeHtml(formatPlainDate(laundry.activeTo) || "-")}</p>
         </div>
         <div class="badge-row">
@@ -1205,7 +1487,7 @@ function ownerLogin(formData) {
 
 function customerLogin(formData) {
   const laundryId = String(formData.get("laundryId") || "");
-  const customerCode = Number(formData.get("code"));
+  const customerCode = localizedNumber(formData.get("code"));
 
   if (!isValidCustomerCode(customerCode)) {
     toast(t("invalidCode"), "error");
@@ -1226,7 +1508,7 @@ function customerLogin(formData) {
 }
 
 function adminLogin(formData) {
-  if (String(formData.get("pin") || "") !== ADMIN_PIN) {
+  if (normalizeDigits(formData.get("pin")).trim() !== ADMIN_PIN) {
     toast(t("invalidAdmin"), "error");
     return;
   }
@@ -1239,12 +1521,13 @@ function adminLogin(formData) {
 
 function addCustomer(formData, form) {
   const laundryId = view.session?.laundryId;
-  const customerCode = Number(formData.get("customerCode"));
+  const customerCode = localizedNumber(formData.get("customerCode"));
   const partsValue = String(formData.get("parts") || "").trim();
   const hasParts = partsValue !== "";
-  const parts = Number(partsValue);
+  const parts = localizedNumber(partsValue);
   const customerName = String(formData.get("customerName") || "").trim();
   const customerPhone = String(formData.get("customerPhone") || "").trim();
+  const serviceDetails = collectServiceDetails(formData);
   const urgent = formData.get("urgent") === "on";
   const laundry = findLaundry(laundryId);
   const serviceAccess = getLaundryServiceAccess(laundry);
@@ -1286,6 +1569,8 @@ function addCustomer(formData, form) {
     customerPhone: savedCustomer.phone,
     customerCode,
     parts,
+    serviceSelections: serviceDetails.selections,
+    ironingAmounts: serviceDetails.ironingAmounts,
     urgent,
     urgentByCustomer: false,
     deliveryRequested: false,
@@ -1318,9 +1603,10 @@ function addCustomer(formData, form) {
 
 function saveLaundry(formData, form) {
   const name = String(formData.get("name") || "").trim();
-  const code = String(formData.get("code") || "").trim();
+  const code = normalizeDigits(formData.get("code")).trim();
   const ownerPhone = String(formData.get("ownerPhone") || "").trim();
   const location = String(formData.get("location") || "").trim();
+  const services = String(formData.get("services") || DEFAULT_LAUNDRY_SERVICES).trim();
   const activeFrom = String(formData.get("activeFrom") || "");
   const activeTo = String(formData.get("activeTo") || "");
   const serviceDisabled = formData.get("serviceDisabled") === "on";
@@ -1333,6 +1619,7 @@ function saveLaundry(formData, form) {
     existing.code = code;
     existing.ownerPhone = ownerPhone;
     existing.location = location;
+    existing.services = services || DEFAULT_LAUNDRY_SERVICES;
     existing.serviceDisabled = serviceDisabled;
     existing.activeFrom = activeFrom;
     existing.activeTo = activeTo;
@@ -1343,6 +1630,7 @@ function saveLaundry(formData, form) {
       code,
       ownerPhone,
       location,
+      services: services || DEFAULT_LAUNDRY_SERVICES,
       serviceDisabled,
       deliveryEnabled: false,
       activeFrom,
@@ -1370,7 +1658,7 @@ function updateLaundryService(formData) {
   render();
 }
 
-function updateDelivery(formData) {
+function updateDelivery(enabled) {
   const laundry = findLaundry(view.session?.laundryId);
   if (!laundry) return;
 
@@ -1380,9 +1668,8 @@ function updateDelivery(formData) {
     return;
   }
 
-  laundry.deliveryEnabled = formData.get("deliveryEnabled") === "on";
+  laundry.deliveryEnabled = Boolean(enabled);
   saveData();
-  toast(t("saved"));
   render();
 }
 
@@ -1517,6 +1804,47 @@ function fillCurrentDeliveryLocation() {
   );
 }
 
+function findNearestLaundries() {
+  if (!("geolocation" in navigator)) {
+    nearestState = { loading: false, searched: true, error: t("locationUnavailable"), results: [] };
+    render();
+    return;
+  }
+
+  nearestState = { ...nearestState, loading: true, searched: true, error: "" };
+  render();
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const userLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      const results = data.laundries
+        .map((laundry) => {
+          const coords = parseLocationCoordinates(laundry.location);
+          if (!coords) return null;
+
+          return {
+            laundry,
+            distanceKm: distanceBetweenKm(userLocation, coords)
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.distanceKm - b.distanceKm);
+
+      nearestState = { loading: false, searched: true, error: "", results };
+      render();
+    },
+    () => {
+      nearestState = { loading: false, searched: true, error: t("locationNeeded"), results: [] };
+      render();
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+  );
+}
+
 function addNotice({ audience, laundryId, customerCode, orderId = null, title, body, type = "general" }) {
   data.notices.unshift({
     id: crypto.randomUUID(),
@@ -1600,7 +1928,7 @@ function notifyDevice(title, body) {
 
 function customerOrders(laundryId, customerCode) {
   return data.orders
-    .filter((order) => order.laundryId === laundryId && order.customerCode === Number(customerCode))
+    .filter((order) => order.laundryId === laundryId && order.customerCode === localizedNumber(customerCode))
     .sort((a, b) => b.createdAt - a.createdAt);
 }
 
@@ -1655,11 +1983,11 @@ function existingCustomerPhone(laundryId, customerCode) {
 }
 
 function findCustomer(laundryId, customerCode) {
-  return data.customers.find((customer) => customer.laundryId === laundryId && customer.code === Number(customerCode));
+  return data.customers.find((customer) => customer.laundryId === laundryId && customer.code === localizedNumber(customerCode));
 }
 
 function upsertCustomer({ laundryId, code, name = "", phone = "" }) {
-  const customerCode = Number(code);
+  const customerCode = localizedNumber(code);
   let customer = findCustomer(laundryId, customerCode);
 
   if (!customer) {
@@ -1682,7 +2010,7 @@ function upsertCustomer({ laundryId, code, name = "", phone = "" }) {
 }
 
 function customerKey(laundryId, customerCode) {
-  return `${laundryId}:${Number(customerCode)}`;
+  return `${laundryId}:${localizedNumber(customerCode)}`;
 }
 
 function customerSelectValue(group) {
@@ -1719,17 +2047,81 @@ function fillExistingCustomer(select) {
 }
 
 function renderLaundryContact(laundry) {
-  if (!laundry.ownerPhone && !laundry.location) return "";
+  const services = laundryServices(laundry);
 
   return `
-    <section class="panel compact-panel">
-      <div class="panel-title">
-        <strong>${icons.owner}${escapeHtml(t("laundryContact"))}</strong>
+    <section class="panel laundry-profile">
+      <div>
+        <h2 class="laundry-profile-title">${escapeHtml(laundry.name)}</h2>
+        <p class="subtle no-margin">${escapeHtml(t("laundryContact"))}</p>
       </div>
-      ${laundry.ownerPhone ? `<p class="contact-line">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(laundry.ownerPhone)}">${escapeHtml(laundry.ownerPhone)}</a></p>` : ""}
-      ${laundry.location ? `<p class="contact-line">${escapeHtml(t("location"))}: ${escapeHtml(laundry.location)}</p>` : ""}
+      <div class="contact-grid">
+        ${laundry.ownerPhone ? `<p class="contact-line">${escapeHtml(t("ownerPhone"))}: <a href="tel:${escapeHtml(laundry.ownerPhone)}">${escapeHtml(laundry.ownerPhone)}</a></p>` : ""}
+        ${laundry.location ? `<p class="contact-line">${escapeHtml(t("location"))}: ${renderLocationValue(laundry.location)}</p>` : ""}
+      </div>
+      ${services.length ? `
+        <div class="service-list" aria-label="${escapeHtml(t("services"))}">
+          <strong>${escapeHtml(t("services"))}</strong>
+          <div class="service-pills">
+            ${services.map((service) => `<span class="service-pill">${escapeHtml(service)}</span>`).join("")}
+          </div>
+        </div>
+      ` : ""}
     </section>
   `;
+}
+
+function laundryServices(laundry) {
+  return String(laundry.services || DEFAULT_LAUNDRY_SERVICES)
+    .split(",")
+    .map((service) => service.trim())
+    .filter(Boolean);
+}
+
+function renderLocationValue(location) {
+  const value = String(location || "");
+  const safeValue = escapeHtml(value);
+  return /^https?:\/\//i.test(value)
+    ? `<a href="${safeValue}" target="_blank" rel="noopener">${safeValue}</a>`
+    : safeValue;
+}
+
+function parseLocationCoordinates(location) {
+  const value = normalizeDigits(location);
+  if (!value) return null;
+
+  const queryMatch = value.match(/[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/i);
+  const atMatch = value.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+  const plainMatch = value.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+  const match = queryMatch || atMatch || plainMatch;
+  if (!match) return null;
+
+  const lat = localizedNumber(match[1]);
+  const lng = localizedNumber(match[2]);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+
+  return { lat, lng };
+}
+
+function distanceBetweenKm(origin, destination) {
+  const radiusKm = 6371;
+  const dLat = toRadians(destination.lat - origin.lat);
+  const dLng = toRadians(destination.lng - origin.lng);
+  const originLat = toRadians(origin.lat);
+  const destinationLat = toRadians(destination.lat);
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(originLat) * Math.cos(destinationLat) * Math.sin(dLng / 2) ** 2;
+  return radiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function toRadians(value) {
+  return value * Math.PI / 180;
+}
+
+function formatDistance(distanceKm) {
+  if (distanceKm < 1) return `${Math.round(distanceKm * 1000)} m`;
+  return `${distanceKm.toFixed(1)} km`;
 }
 
 function urgentNoticeForOrder(order) {
@@ -1747,11 +2139,23 @@ function findLaundry(laundryId) {
 }
 
 function isValidCustomerCode(value) {
-  return Number.isInteger(value) && value >= 0 && value <= 500;
+  const number = localizedNumber(value);
+  return Number.isInteger(number) && number >= 0 && number <= 500;
 }
 
 function normalize(value) {
-  return String(value || "").trim().toLowerCase();
+  return normalizeDigits(value).trim().toLowerCase();
+}
+
+function normalizeDigits(value) {
+  return String(value ?? "")
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0));
+}
+
+function localizedNumber(value) {
+  const normalized = normalizeDigits(value).trim();
+  return normalized === "" ? NaN : Number(normalized);
 }
 
 function markVisibleNotificationsRead() {

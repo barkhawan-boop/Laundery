@@ -207,6 +207,83 @@ button {
   margin-bottom: 0;
 }
 
+.delivery-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.delivery-toggle-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+}
+
+.delivery-toggle-title svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch-track {
+  width: 58px;
+  height: 32px;
+  border-radius: 999px;
+  background: #d6e0e6;
+  border: 1px solid var(--line);
+  position: relative;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.switch-track::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 3px;
+  left: 4px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(18, 26, 35, 0.2);
+  transition: transform 160ms ease;
+}
+
+.switch input:checked + .switch-track {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.switch input:checked + .switch-track::after {
+  transform: translateX(25px);
+}
+
+.delivery-status {
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.delivery-status.on {
+  color: var(--green);
+}
+
+.delivery-status.off {
+  color: var(--danger);
+}
+
 .form-grid {
   display: grid;
   gap: 14px;
@@ -221,6 +298,13 @@ button {
   color: var(--muted);
   font-size: 0.84rem;
   font-weight: 850;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .input,
@@ -453,6 +537,78 @@ button {
   padding-top: 14px;
 }
 
+.service-choice {
+  display: grid;
+  gap: 12px;
+}
+
+.service-choice-table {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--line);
+}
+
+.service-choice-row {
+  display: grid;
+  grid-template-columns: minmax(92px, 1.15fr) repeat(3, minmax(54px, 0.75fr));
+  align-items: center;
+  gap: 1px;
+  background: var(--line);
+}
+
+.service-choice-row > span,
+.service-check {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 8px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.service-choice-row > span:first-child {
+  justify-content: flex-start;
+  color: var(--muted);
+}
+
+.service-choice-head > span {
+  background: #e8f4f0;
+  color: var(--brand-strong);
+}
+
+.service-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--brand);
+}
+
+.ironing-amounts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mini-input {
+  min-height: 44px;
+  text-align: center;
+}
+
+.service-summary {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.service-summary strong {
+  font-size: 0.86rem;
+}
+
 .card-head {
   display: flex;
   justify-content: space-between;
@@ -483,6 +639,53 @@ button {
 .contact-line a {
   color: var(--brand-strong);
   text-decoration: none;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.laundry-profile {
+  display: grid;
+  gap: 16px;
+}
+
+.laundry-profile-title {
+  margin: 0;
+  font-size: clamp(1.45rem, 6vw, 2rem);
+  line-height: 1.1;
+}
+
+.contact-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.service-list {
+  display: grid;
+  gap: 10px;
+}
+
+.service-list strong {
+  font-size: 0.95rem;
+}
+
+.service-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border-radius: 999px;
+  background: #e8f4f0;
+  color: var(--brand-strong);
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
 }
 
 .delivery-location-line {
