@@ -113,6 +113,11 @@ button {
   cursor: pointer;
 }
 
+.brand-button {
+  border: 0;
+  font: inherit;
+}
+
 .brand-mark {
   width: 58px;
   height: 58px;

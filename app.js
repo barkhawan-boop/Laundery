@@ -462,6 +462,12 @@ document.addEventListener("click", (event) => {
     view = { screen: "language", session: null };
     render();
   }
+  if (action === "go-language") {
+    data.lastSession = null;
+    saveData();
+    view = { screen: "language", session: null };
+    render();
+  }
   if (action === "screen") {
     view = { screen: button.dataset.screen, session: null };
     render();
@@ -786,20 +792,18 @@ function renderScreen() {
 }
 
 function renderTopbar({ title = t("appName"), subtitle = "", back = true, secretAdmin = false } = {}) {
-  const brandOpen = secretAdmin
-    ? `<div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">`
-    : `<div class="brand">`;
-  const brandClose = `</div>`;
+  const brandAction = secretAdmin ? "secret-admin-tap" : "go-language";
+  const brandLabel = secretAdmin ? t("appName") : t("chooseLanguage");
 
   return `
     <header class="topbar">
-      ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=50" alt="" />
+      <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
+        <img class="brand-mark" src="assets/icon.svg?v=51" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
         </div>
-      ${brandClose}
+      </button>
       ${back ? `<button class="btn ghost icon-btn" data-action="back-role" title="${escapeHtml(t("back"))}" aria-label="${escapeHtml(t("back"))}">${icons.back}</button>` : ""}
     </header>
   `;
@@ -810,7 +814,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=50" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=51" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -2108,11 +2112,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=50",
-        badge: "assets/icon.svg?v=50"
+        icon: "assets/icon.svg?v=51",
+        badge: "assets/icon.svg?v=51"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=50" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=51" });
     }
   });
 }
