@@ -745,7 +745,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=35" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=37" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -761,7 +761,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=35" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=37" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -786,7 +786,7 @@ function renderRoleChoice() {
       <div class="role-grid">
         <button class="btn primary" data-action="screen" data-screen="owner-login">${icons.owner}${escapeHtml(t("owner"))}</button>
         <button class="btn blue" data-action="screen" data-screen="customer-login">${icons.customer}${escapeHtml(t("customer"))}</button>
-        <button class="btn light" data-action="screen" data-screen="nearest-laundry">${icons.pin}${escapeHtml(t("findNearestLaundry"))}</button>
+        <button class="btn light role-grid-center" data-action="screen" data-screen="nearest-laundry">${icons.pin}${escapeHtml(t("findNearestLaundry"))}</button>
       </div>
       <div class="panel">
         <div class="panel-title">
@@ -808,6 +808,7 @@ function renderNearestLaundry() {
       <section class="panel compact-panel">
         <p class="subtle no-margin">${escapeHtml(t("nearestIntro"))}</p>
         <button class="btn primary" data-action="find-nearest" ${nearestState.loading ? "disabled" : ""}>${icons.pin}${escapeHtml(nearestState.loading ? t("locationNeeded") : t("useMyLocation"))}</button>
+        <a class="btn light" href="https://www.google.com/maps/search/laundry+near+me+Erbil" target="_blank" rel="noopener">${icons.pin}Google Maps</a>
         ${nearestState.error ? `<div class="notice service-blocked"><strong>${escapeHtml(nearestState.error)}</strong></div>` : ""}
       </section>
       <section class="list" aria-label="${escapeHtml(t("nearestLaundry"))}">
@@ -818,10 +819,23 @@ function renderNearestLaundry() {
 }
 
 function renderNearestResults() {
-  if (!nearestState.searched && !nearestState.results.length) return "";
-  if (!nearestState.results.length) return `<div class="empty">${escapeHtml(t("noNearbyLaundries"))}</div>`;
+  const results = nearestState.results.length ? nearestState.results : registeredLaundryMapResults();
+  if (!nearestState.searched && !results.length) return "";
+  if (!results.length) {
+    return `
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h3 class="card-title">Google Maps</h3>
+            <p class="meta">${escapeHtml(t("noNearbyLaundries"))}</p>
+          </div>
+        </div>
+        <a class="btn primary" href="https://www.google.com/maps/search/laundry+near+me+Erbil" target="_blank" rel="noopener">${icons.pin}Google Maps</a>
+      </article>
+    `;
+  }
 
-  return nearestState.results.map((result) => {
+  return results.map((result) => {
     const mapUrl = googleMapsSearchUrl(result.laundry);
     const directionsUrl = googleMapsDirectionsUrl(result.laundry, nearestState.userLocation);
     const distanceLine = Number.isFinite(result.distanceKm)
@@ -1255,7 +1269,7 @@ function renderServiceChoiceTable(disabledAttr = "") {
         <span aria-hidden="true"></span>
         ${columns.map((column) => `
           <label class="field service-amount-field">
-            <span>${escapeHtml(t("ironingAmount"))} - ${escapeHtml(column.label)}</span>
+            <span>${escapeHtml(column.label)}</span>
             <input class="input mini-input" name="ironQty_${column.key}" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" ${disabledAttr} />
           </label>
         `).join("")}
@@ -1966,11 +1980,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=35",
-        badge: "assets/icon.svg?v=35"
+        icon: "assets/icon.svg?v=37",
+        badge: "assets/icon.svg?v=37"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=35" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=37" });
     }
   });
 }

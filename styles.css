@@ -212,6 +212,10 @@ button {
   grid-template-columns: 1fr;
 }
 
+.role-grid-center {
+  justify-self: stretch;
+}
+
 .panel {
   background: var(--surface-soft);
   border: 1px solid var(--line);
@@ -649,8 +653,8 @@ button {
 }
 
 .service-total-field {
-  width: min(100%, 280px);
-  justify-self: end;
+  width: 100%;
+  justify-self: stretch;
 }
 
 .mini-input {
@@ -964,6 +968,12 @@ button {
 
   .role-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .role-grid-center {
+    grid-column: 1 / -1;
+    width: min(100%, 440px);
+    justify-self: center;
   }
 
   .language-grid {
