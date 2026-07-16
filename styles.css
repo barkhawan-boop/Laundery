@@ -1147,14 +1147,8 @@ button {
     padding-inline: 28px;
   }
 
-  .role-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .role-grid-center {
-    grid-column: 1 / -1;
-    width: min(100%, 440px);
-    justify-self: center;
+    width: 100%;
   }
 
   .language-grid {
