@@ -112,7 +112,7 @@ const dict = {
     accountExpiredTitle: "Your account expired",
     accountExpiredBody: "Please pay app fee to continue. For paying call 07504558922 or FIB same number.",
     registeredLaundries: "Registered laundries",
-    codeRange: "Code 0-500",
+    codeRange: "3 numbers + 1 letter",
     partsLabel: "parts",
     codeLabel: "code",
     added: "Added",
@@ -125,7 +125,7 @@ const dict = {
     completedToast: "Customer notified",
     invalidLogin: "Check the name and code",
     invalidAdmin: "Wrong admin PIN",
-    invalidCode: "Use a code from 0 to 500",
+    invalidCode: "Use the generated customer code",
     duplicateActive: "This code already has active clothes",
     duplicateCustomerCode: "This code already belongs to another customer. Choose the customer from the existing list.",
     notificationPermission: "Phone alerts",
@@ -240,7 +240,7 @@ const dict = {
     accountExpiredTitle: "هەژمارەکەت بەسەرچووە",
     accountExpiredBody: "تکایە کرێی ئەپەکە بدە بۆ بەردەوامبوون. بۆ پارەدان پەیوەندی بکە بە 07504558922 یان FIB بە هەمان ژمارە.",
     registeredLaundries: "لاندرییە تۆمارکراوەکان",
-    codeRange: "کۆد 0-500",
+    codeRange: "٣ ژمارە + ١ پیت",
     partsLabel: "پارچە",
     codeLabel: "کۆد",
     added: "زیادکرا",
@@ -253,7 +253,7 @@ const dict = {
     completedToast: "کڕیار ئاگادارکرایەوە",
     invalidLogin: "ناو و کۆد بپشکنە",
     invalidAdmin: "پینی ئەدمین هەڵەیە",
-    invalidCode: "کۆد لە نێوان 0 تا 500 بەکاربهێنە",
+    invalidCode: "کۆدی دروستکراوی کڕیار بەکاربهێنە",
     duplicateActive: "ئەم کۆدە جلێکی چالاکی هەیە",
     duplicateCustomerCode: "ئەم کۆدە پێشتر بۆ کڕیارێک تۆمارکراوە. کڕیارەکە لە لیستی کڕیاری پێشوو هەڵبژێرە.",
     notificationPermission: "ئاگاداری مۆبایل",
@@ -368,7 +368,7 @@ const dict = {
     accountExpiredTitle: "انتهى حسابك",
     accountExpiredBody: "يرجى دفع رسوم التطبيق للمتابعة. للدفع اتصل على 07504558922 أو FIB على نفس الرقم.",
     registeredLaundries: "المغاسل المسجلة",
-    codeRange: "الكود 0-500",
+    codeRange: "٣ أرقام + حرف",
     partsLabel: "قطع",
     codeLabel: "كود",
     added: "تمت الإضافة",
@@ -381,7 +381,7 @@ const dict = {
     completedToast: "تم إشعار الزبون",
     invalidLogin: "تأكد من الاسم والكود",
     invalidAdmin: "رمز المشرف غير صحيح",
-    invalidCode: "استخدم كودا من 0 إلى 500",
+    invalidCode: "استخدم كود الزبون المولد",
     duplicateActive: "يوجد طلب نشط لهذا الكود",
     duplicateCustomerCode: "هذا الكود مسجل لزبون آخر. اختر الزبون من القائمة السابقة.",
     notificationPermission: "تنبيهات الهاتف",
@@ -472,6 +472,11 @@ document.addEventListener("click", (event) => {
   if (action === "generate-code") {
     const input = document.querySelector("#adminLaundryCode");
     if (input) input.value = String(generateLaundryCode());
+  }
+  if (action === "generate-customer-code") {
+    const form = button.closest("form");
+    const input = form?.elements.customerCode;
+    if (input) input.value = generateCustomerCode(view.session?.laundryId);
   }
   if (action === "enable-alerts") {
     requestNotificationPermission();
@@ -577,7 +582,7 @@ function loadData() {
         laundryId: "laundry-shanadar",
         name: "Ari",
         phone: "",
-        code: 12,
+        code: "12",
         createdAt: now - 7200000,
         updatedAt: now - 7200000
       },
@@ -586,7 +591,7 @@ function loadData() {
         laundryId: "laundry-citadel",
         name: "Sara",
         phone: "",
-        code: 45,
+        code: "45",
         createdAt: now - 172800000,
         updatedAt: now - 172800000
       }
@@ -597,7 +602,7 @@ function loadData() {
         laundryId: "laundry-shanadar",
         customerName: "Ari",
         customerPhone: "",
-        customerCode: 12,
+        customerCode: "12",
         parts: 4,
         urgent: false,
         urgentByCustomer: false,
@@ -614,7 +619,7 @@ function loadData() {
         laundryId: "laundry-citadel",
         customerName: "Sara",
         customerPhone: "",
-        customerCode: 45,
+        customerCode: "45",
         parts: 2,
         urgent: true,
         urgentByCustomer: true,
@@ -639,7 +644,7 @@ function normalizeStoredData(state) {
     customers: normalizeCustomers(state),
     orders: Array.isArray(state.orders) ? state.orders.map(normalizeOrder) : [],
     notices: Array.isArray(state.notices)
-      ? state.notices.map((notice) => ({ ...notice, readAt: notice.readAt || null, orderId: notice.orderId || null, type: notice.type || "general" }))
+      ? state.notices.map((notice) => ({ ...notice, customerCode: normalizeCustomerCode(notice.customerCode), readAt: notice.readAt || null, orderId: notice.orderId || null, type: notice.type || "general" }))
       : [],
     lastSession: state.lastSession || null
   };
@@ -656,7 +661,7 @@ function normalizeCustomers(state) {
   });
 
   sourceOrders.forEach((order) => {
-    const code = localizedNumber(order.customerCode);
+    const code = normalizeCustomerCode(order.customerCode);
     if (!order.laundryId || !isValidCustomerCode(code)) return;
 
     const key = customerKey(order.laundryId, code);
@@ -682,7 +687,7 @@ function normalizeCustomer(customer) {
     laundryId: customer.laundryId || "",
     name: customer.name || customer.customerName || "",
     phone: customer.phone || customer.customerPhone || "",
-    code: localizedNumber(customer.code ?? customer.customerCode),
+    code: normalizeCustomerCode(customer.code ?? customer.customerCode),
     createdAt: customer.createdAt || Date.now(),
     updatedAt: customer.updatedAt || customer.createdAt || Date.now()
   };
@@ -704,6 +709,7 @@ function normalizeLaundry(laundry) {
 function normalizeOrder(order) {
   return {
     ...order,
+    customerCode: normalizeCustomerCode(order.customerCode),
     orderName: order.orderName || "",
     customerPhone: order.customerPhone || "",
     serviceSelections: Array.isArray(order.serviceSelections) ? order.serviceSelections : [],
@@ -760,7 +766,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       ${brandOpen}
-        <img class="brand-mark" src="assets/icon.svg?v=44" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=45" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -776,7 +782,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=44" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=45" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -910,7 +916,7 @@ function renderCustomerLogin() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("customerCode"))}</span>
-          <input class="input" name="code" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" required />
+          <input class="input" name="code" autocomplete="one-time-code" required />
         </label>
         <button class="btn blue" type="submit">${icons.customer}${escapeHtml(t("signIn"))}</button>
       </form>
@@ -949,6 +955,7 @@ function renderOwnerDashboard() {
   const disabledAttr = blocked ? "disabled" : "";
   const customerGroups = groupCustomersByLaundry(laundry.id, orders);
   const selectedCustomer = selectedOwnerCustomerGroup(laundry.id, customerGroups);
+  const suggestedCustomerCode = generateCustomerCode(laundry.id);
   const urgentGroups = customerGroups.filter((group) =>
     group.orders.some((order) => !order.done && (order.urgent || order.urgentByCustomer))
   );
@@ -985,8 +992,9 @@ function renderOwnerDashboard() {
         </label>
         <label class="field">
           <span>${escapeHtml(t("customerCode"))} · ${escapeHtml(t("codeRange"))}</span>
-          <input class="input" name="customerCode" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" required ${disabledAttr} />
+          <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" required ${disabledAttr} />
         </label>
+        <button class="btn light" type="button" data-action="generate-customer-code" ${disabledAttr}>${icons.code}${escapeHtml(t("generateCode"))}</button>
         <button class="btn primary" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
       </form>
       <section class="panel form-grid" aria-label="${escapeHtml(t("orders"))}">
@@ -994,7 +1002,7 @@ function renderOwnerDashboard() {
         ${customerGroups.length ? `
           <label class="field compact-search-field">
             <span>${escapeHtml(t("searchByCode"))}</span>
-            <input class="input mini-input" data-action="search-owner-customer-code" inputmode="numeric" pattern="[0-9٠-٩۰-۹]*" placeholder="${escapeHtml(t("customerCode"))}" />
+            <input class="input mini-input" data-action="search-owner-customer-code" autocomplete="off" placeholder="${escapeHtml(t("customerCode"))}" />
           </label>
           <label class="field">
             <span>${escapeHtml(t("existingCustomer"))}</span>
@@ -1192,7 +1200,7 @@ function renderUrgentCustomerCard(group, blocked = false) {
 function selectedOwnerCustomerGroup(laundryId, groups) {
   if (!groups.length) return null;
 
-  const selectedCode = localizedNumber(view.selectedCustomerCode);
+  const selectedCode = normalizeCustomerCode(view.selectedCustomerCode);
   const selected = groups.find((group) => group.customerCode === selectedCode);
   if (selected) return selected;
 
@@ -1203,13 +1211,13 @@ function selectedOwnerCustomerGroup(laundryId, groups) {
 function selectOwnerCustomer(customerCode) {
   view = {
     ...view,
-    selectedCustomerCode: localizedNumber(customerCode)
+    selectedCustomerCode: normalizeCustomerCode(customerCode)
   };
   render();
 }
 
 function searchOwnerCustomerByCode(value) {
-  const code = localizedNumber(value);
+  const code = normalizeCustomerCode(value);
   if (!isValidCustomerCode(code)) return;
 
   const laundryId = view.session?.laundryId;
@@ -1597,7 +1605,7 @@ function ownerLogin(formData) {
 
 function customerLogin(formData) {
   const laundryId = String(formData.get("laundryId") || "");
-  const customerCode = localizedNumber(formData.get("code"));
+  const customerCode = normalizeCustomerCode(formData.get("code"));
 
   if (!isValidCustomerCode(customerCode)) {
     toast(t("invalidCode"), "error");
@@ -1632,7 +1640,7 @@ function adminLogin(formData) {
 function addCustomer(formData, form) {
   const formType = form?.dataset?.form || "";
   const laundryId = view.session?.laundryId;
-  const customerCode = localizedNumber(formData.get("customerCode"));
+  let customerCode = normalizeCustomerCode(formData.get("customerCode"));
   const partsValue = String(formData.get("parts") || "").trim();
   const hasParts = partsValue !== "";
   const parts = localizedNumber(partsValue);
@@ -1647,6 +1655,10 @@ function addCustomer(formData, form) {
   if (serviceAccess.blocked) {
     toast(t("accountExpiredTitle"), "error");
     return;
+  }
+
+  if (!customerCode && formType === "add-customer") {
+    customerCode = generateCustomerCode(laundryId);
   }
 
   if (!laundryId || !isValidCustomerCode(customerCode)) {
@@ -1987,7 +1999,7 @@ function addNotice({ audience, laundryId, customerCode, orderId = null, title, b
     type,
     audience,
     laundryId,
-    customerCode,
+    customerCode: normalizeCustomerCode(customerCode),
     orderId,
     title,
     body,
@@ -2053,18 +2065,19 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=44",
-        badge: "assets/icon.svg?v=44"
+        icon: "assets/icon.svg?v=45",
+        badge: "assets/icon.svg?v=45"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=44" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=45" });
     }
   });
 }
 
 function customerOrders(laundryId, customerCode) {
+  const code = normalizeCustomerCode(customerCode);
   return data.orders
-    .filter((order) => order.laundryId === laundryId && order.customerCode === localizedNumber(customerCode))
+    .filter((order) => order.laundryId === laundryId && order.customerCode === code)
     .sort((a, b) => b.createdAt - a.createdAt);
 }
 
@@ -2119,11 +2132,12 @@ function existingCustomerPhone(laundryId, customerCode) {
 }
 
 function findCustomer(laundryId, customerCode) {
-  return data.customers.find((customer) => customer.laundryId === laundryId && customer.code === localizedNumber(customerCode));
+  const code = normalizeCustomerCode(customerCode);
+  return data.customers.find((customer) => customer.laundryId === laundryId && customer.code === code);
 }
 
 function upsertCustomer({ laundryId, code, name = "", phone = "" }) {
-  const customerCode = localizedNumber(code);
+  const customerCode = normalizeCustomerCode(code);
   let customer = findCustomer(laundryId, customerCode);
 
   if (!customer) {
@@ -2146,7 +2160,7 @@ function upsertCustomer({ laundryId, code, name = "", phone = "" }) {
 }
 
 function customerKey(laundryId, customerCode) {
-  return `${laundryId}:${localizedNumber(customerCode)}`;
+  return `${laundryId}:${normalizeCustomerCode(customerCode)}`;
 }
 
 function customerSelectValue(group) {
@@ -2297,12 +2311,18 @@ function findLaundry(laundryId) {
 }
 
 function isValidCustomerCode(value) {
-  const number = localizedNumber(value);
-  return Number.isInteger(number) && number >= 0 && number <= 500;
+  const code = normalizeCustomerCode(value);
+  const legacyNumeric = /^\d{1,3}$/.test(code);
+  const generatedCode = /^(?=(?:.*\d){3})(?=(?:.*[A-Z]){1})[A-Z0-9]{4}$/.test(code);
+  return legacyNumeric || generatedCode;
 }
 
 function normalize(value) {
   return normalizeDigits(value).trim().toLowerCase();
+}
+
+function normalizeCustomerCode(value) {
+  return normalizeDigits(value).trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
 function normalizeDigits(value) {
@@ -2368,7 +2388,7 @@ function restoreSavedSession() {
   ) {
     return {
       screen: "customer-dashboard",
-      session: { role: "customer", laundryId: session.laundryId, customerCode: Number(session.customerCode) }
+      session: { role: "customer", laundryId: session.laundryId, customerCode: normalizeCustomerCode(session.customerCode) }
     };
   }
 
@@ -2415,6 +2435,33 @@ function generateLaundryCode() {
   do {
     code = String(Math.floor(1000 + Math.random() * 9000));
   } while (used.has(code));
+  return code;
+}
+
+function generateCustomerCode(laundryId) {
+  const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const used = new Set([
+    ...data.customers.filter((customer) => customer.laundryId === laundryId).map((customer) => normalizeCustomerCode(customer.code)),
+    ...data.orders.filter((order) => order.laundryId === laundryId).map((order) => normalizeCustomerCode(order.customerCode))
+  ]);
+
+  let code = "";
+  do {
+    const parts = [
+      letters[Math.floor(Math.random() * letters.length)],
+      String(Math.floor(Math.random() * 10)),
+      String(Math.floor(Math.random() * 10)),
+      String(Math.floor(Math.random() * 10))
+    ];
+
+    for (let index = parts.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [parts[index], parts[swapIndex]] = [parts[swapIndex], parts[index]];
+    }
+
+    code = parts.join("");
+  } while (used.has(code));
+
   return code;
 }
 
