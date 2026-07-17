@@ -867,7 +867,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=63" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=64" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -896,7 +896,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=63" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=64" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -912,7 +912,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=63" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=64" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1089,7 +1089,7 @@ function renderOwnerDashboard() {
   const serviceAccess = getLaundryServiceAccess(laundry);
   const blocked = serviceAccess.blocked;
   const disabledAttr = blocked ? "disabled" : "";
-  const customerGroups = groupCustomersByLaundry(laundry.id, orders);
+  const customerGroups = groupCustomersByLaundry(laundry.id, active);
   const selectedCustomer = selectedOwnerCustomerGroup(laundry.id, customerGroups);
   const suggestedCustomerCode = generateCustomerCode(laundry.id);
 
@@ -2273,11 +2273,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=63",
-        badge: "assets/icon.svg?v=63"
+        icon: "assets/icon.svg?v=64",
+        badge: "assets/icon.svg?v=64"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=63" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=64" });
     }
   });
 }
