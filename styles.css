@@ -1154,7 +1154,6 @@ button {
   background: var(--danger);
 }
 
-[dir="rtl"] .brand,
 [dir="rtl"] .card-head,
 [dir="rtl"] .topbar,
 [dir="rtl"] .panel-title {
