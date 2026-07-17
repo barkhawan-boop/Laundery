@@ -867,7 +867,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=64" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=65" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -896,7 +896,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=64" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=65" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -912,7 +912,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=64" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=65" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1176,8 +1176,10 @@ function renderCustomerDashboard() {
   const orders = customerOrders(session.laundryId, session.customerCode);
   const customer = findCustomer(session.laundryId, session.customerCode);
   const latest = orders[0];
-  const active = orders.find((order) => !order.done);
-  const name = latest?.customerName || customer?.name || `${t("codeLabel")} ${session.customerCode}`;
+  const runningOrders = orders.filter((order) => !order.done);
+  const archivedOrders = orders.filter((order) => order.done);
+  const displayOrder = runningOrders[0] || latest;
+  const name = displayOrder?.customerName || customer?.name || `${t("codeLabel")} ${session.customerCode}`;
   const customerTitle = `${name} - ${t("codeLabel")}: ${session.customerCode}`;
   const notices = noticesForCustomer(session.laundryId, session.customerCode);
 
@@ -1185,11 +1187,11 @@ function renderCustomerDashboard() {
     <section class="screen">
       ${renderTopbar({ title: `${t("welcome")}, ${customerTitle}`, subtitle: laundry.name, back: false })}
       ${renderLaundryContact(laundry)}
-      ${latest ? renderCustomerStatus(latest, active, laundry) : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+      ${runningOrders.length ? runningOrders.map((order) => renderCustomerStatus(order, order, laundry)).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       ${renderNotices(notices)}
       <section class="list" aria-label="${escapeHtml(t("history"))}">
         <h2 class="panel-title">${escapeHtml(t("history"))}</h2>
-        ${orders.length ? orders.map((order) => renderHistoryCard(order, findLaundry(order.laundryId))).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+        ${archivedOrders.length ? archivedOrders.map((order) => renderHistoryCard(order, findLaundry(order.laundryId))).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       </section>
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
@@ -2273,11 +2275,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=64",
-        badge: "assets/icon.svg?v=64"
+        icon: "assets/icon.svg?v=65",
+        badge: "assets/icon.svg?v=65"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=64" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=65" });
     }
   });
 }
