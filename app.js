@@ -880,7 +880,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=78" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=79" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -909,7 +909,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=78" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=79" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -925,7 +925,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=78" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=79" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1180,7 +1180,7 @@ function renderOwnerTodayTaskCard(order, blocked = false) {
 
   return `
     <article class="card ${order.urgent || order.urgentByCustomer ? "urgent" : ""}">
-      <div class="card-head">
+      ${showSummary ? `<div class="card-head">
         <div>
           <h3 class="card-title">${escapeHtml(name)}</h3>
           <p class="meta">${escapeHtml(t("codeLabel"))}: ${escapeHtml(order.customerCode)} · ${escapeHtml(formatDate(order.createdAt))}</p>
@@ -1190,7 +1190,7 @@ function renderOwnerTodayTaskCard(order, blocked = false) {
           ${order.urgent || order.urgentByCustomer ? `<span class="badge urgent">${escapeHtml(t("urgent"))}</span>` : ""}
           ${order.deliveryRequested ? `<span class="badge info">${icons.truck}${escapeHtml(t("delivery"))}</span>` : ""}
         </div>
-      </div>
+      </div>` : ""}
       ${renderOwnerOrderCard(order, blocked)}
     </article>
   `;
@@ -1234,13 +1234,9 @@ function renderOwnerDailyWorkPanel(customerGroups, selectedCustomer, blocked) {
             `).join("")}
           </select>
         </label>
-        ${selectedCustomer ? renderSelectedCustomerInfo(selectedCustomer) : ""}
-        ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked, false) : ""}
+        ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked, false, false) : ""}
       ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
     </section>
-    ${selectedCustomer ? `
-      <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(selectedCustomer.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
-    ` : ""}
   `;
 }
 
@@ -1350,7 +1346,7 @@ function renderAdminDashboard() {
   `;
 }
 
-function renderOwnerCustomerGroup(group, blocked = false, showExistingOrders = true) {
+function renderOwnerCustomerGroup(group, blocked = false, showExistingOrders = true, showSummary = true) {
   const latest = group.orders[0];
   const visibleOrders = group.orders.filter((order) => !order.done);
   const activeCount = group.orders.filter((order) => !order.done).length;
@@ -2371,11 +2367,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=78",
-        badge: "assets/icon.svg?v=78"
+        icon: "assets/icon.svg?v=79",
+        badge: "assets/icon.svg?v=79"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=78" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=79" });
     }
   });
 }
