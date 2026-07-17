@@ -867,7 +867,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=62" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=63" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -896,7 +896,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=62" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=63" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -912,7 +912,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=62" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=63" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1092,9 +1092,6 @@ function renderOwnerDashboard() {
   const customerGroups = groupCustomersByLaundry(laundry.id, orders);
   const selectedCustomer = selectedOwnerCustomerGroup(laundry.id, customerGroups);
   const suggestedCustomerCode = generateCustomerCode(laundry.id);
-  const urgentGroups = customerGroups.filter((group) =>
-    group.orders.some((order) => !order.done && (order.urgent || order.urgentByCustomer))
-  );
 
   return `
     <section class="screen">
@@ -1154,7 +1151,6 @@ function renderOwnerDashboard() {
       ${selectedCustomer ? `
         <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(selectedCustomer.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
       ` : ""}
-      ${renderUrgentCustomers(urgentGroups, blocked)}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
       </div>
@@ -1268,12 +1264,13 @@ function renderAdminDashboard() {
 
 function renderOwnerCustomerGroup(group, blocked = false) {
   const latest = group.orders[0];
+  const visibleOrders = group.orders.filter((order) => !order.done);
   const activeCount = group.orders.filter((order) => !order.done).length;
   const urgentCount = group.orders.filter((order) => !order.done && (order.urgent || order.urgentByCustomer)).length;
   const disabledAttr = blocked ? "disabled" : "";
   const phoneLine = group.phone ? `<p class="meta">${escapeHtml(t("customerPhone"))}: ${escapeHtml(group.phone)}</p>` : "";
-  const submissions = group.orders.length
-    ? group.orders.map((order) => renderOwnerOrderCard(order, blocked)).join("")
+  const submissions = visibleOrders.length
+    ? visibleOrders.map((order) => renderOwnerOrderCard(order, blocked)).join("")
     : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`;
 
   return `
@@ -1347,10 +1344,12 @@ function selectedOwnerCustomerGroup(laundryId, groups) {
 
   const selectedCode = normalizeCustomerCode(view.selectedCustomerCode);
   const selected = groups.find((group) => group.customerCode === selectedCode);
-  if (selected) return selected;
+  if (selected && selected.orders.some((order) => !order.done)) return selected;
 
-  view.selectedCustomerCode = groups[0].customerCode;
-  return groups[0];
+  const activeGroup = groups.find((group) => group.orders.some((order) => !order.done));
+  const nextGroup = activeGroup || selected || groups[0];
+  view.selectedCustomerCode = nextGroup.customerCode;
+  return nextGroup;
 }
 
 function selectOwnerCustomer(customerCode) {
@@ -2274,11 +2273,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=62",
-        badge: "assets/icon.svg?v=62"
+        icon: "assets/icon.svg?v=63",
+        badge: "assets/icon.svg?v=63"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=62" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=63" });
     }
   });
 }
