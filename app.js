@@ -880,7 +880,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=76" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=77" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -909,7 +909,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=76" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=77" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -925,7 +925,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=76" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=77" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1235,7 +1235,7 @@ function renderOwnerDailyWorkPanel(customerGroups, selectedCustomer, blocked) {
           </select>
         </label>
         ${selectedCustomer ? renderSelectedCustomerInfo(selectedCustomer) : ""}
-        ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked) : ""}
+        ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked, false) : ""}
       ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
     </section>
     ${selectedCustomer ? `
@@ -1350,7 +1350,7 @@ function renderAdminDashboard() {
   `;
 }
 
-function renderOwnerCustomerGroup(group, blocked = false) {
+function renderOwnerCustomerGroup(group, blocked = false, showExistingOrders = true) {
   const latest = group.orders[0];
   const visibleOrders = group.orders.filter((order) => !order.done);
   const activeCount = group.orders.filter((order) => !order.done).length;
@@ -1374,9 +1374,11 @@ function renderOwnerCustomerGroup(group, blocked = false) {
           ${urgentCount ? `<span class="badge urgent">${urgentCount} ${escapeHtml(t("urgent"))}</span>` : ""}
         </div>
       </div>
-      <div class="submission-list">
-        ${submissions}
-      </div>
+      ${showExistingOrders ? `
+        <div class="submission-list">
+          ${submissions}
+        </div>
+      ` : ""}
       <form class="form-grid service-form" data-form="add-submission">
         <input type="hidden" name="customerCode" value="${escapeHtml(group.customerCode)}" />
         <input type="hidden" name="customerName" value="${escapeHtml(latest?.customerName || group.name || "")}" />
@@ -2369,11 +2371,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=76",
-        badge: "assets/icon.svg?v=76"
+        icon: "assets/icon.svg?v=77",
+        badge: "assets/icon.svg?v=77"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=76" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=77" });
     }
   });
 }
