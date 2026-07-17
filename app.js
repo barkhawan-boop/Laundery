@@ -877,7 +877,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=71" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=72" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -906,7 +906,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=71" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=72" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -922,7 +922,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=71" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=72" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1390,7 +1390,7 @@ function selectedOwnerCustomerGroup(laundryId, groups) {
 
   const selectedCode = normalizeCustomerCode(view.selectedCustomerCode);
   const selected = groups.find((group) => group.customerCode === selectedCode);
-  if (selected && selected.orders.some((order) => !order.done)) return selected;
+  if (selected) return selected;
 
   const activeGroup = groups.find((group) => group.orders.some((order) => !order.done));
   const nextGroup = activeGroup || selected || groups[0];
@@ -1901,6 +1901,7 @@ function addCustomer(formData, form) {
 
   if (!hasParts) {
     view.selectedCustomerCode = customerCode;
+    view.ownerSection = "daily-work";
     saveData();
     form.reset();
     toast(t("customerRegistered"));
@@ -1931,6 +1932,7 @@ function addCustomer(formData, form) {
 
   data.orders.push(order);
   view.selectedCustomerCode = customerCode;
+  view.ownerSection = "daily-work";
 
   if (urgent) {
     addNotice({
@@ -2329,11 +2331,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=71",
-        badge: "assets/icon.svg?v=71"
+        icon: "assets/icon.svg?v=72",
+        badge: "assets/icon.svg?v=72"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=71" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=72" });
     }
   });
 }
