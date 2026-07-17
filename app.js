@@ -877,7 +877,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=67" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=68" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -906,7 +906,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=67" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=68" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -922,7 +922,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=67" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=68" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1233,7 +1233,7 @@ function renderCustomerDashboard() {
       ${renderNotices(notices)}
       <section class="list" aria-label="${escapeHtml(t("history"))}">
         <h2 class="panel-title">${escapeHtml(t("history"))}</h2>
-        ${archivedOrders.length ? archivedOrders.map((order) => renderHistoryCard(order, findLaundry(order.laundryId))).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+        ${archivedOrders.length ? renderHistoryArchive(archivedOrders) : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       </section>
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
@@ -1670,13 +1670,23 @@ function renderOrderPiecesDate(order) {
 }
 
 
-function renderHistoryCard(order, laundry) {
+function renderHistoryArchive(orders) {
   return `
-    <details class="card history-order ${order.done ? "done" : ""}">
+    <details class="card history-order history-archive">
       <summary class="history-summary">
-        <span class="history-summary-title">${escapeHtml(laundry?.name || t("laundryName"))}</span>
-        ${renderOrderPiecesDate(order)}
+        <span class="history-summary-title">${escapeHtml(t("history"))}</span>
+        <span class="order-pieces-date"><span>${orders.length} ${escapeHtml(t("submissions"))}</span></span>
       </summary>
+      <div class="history-archive-list">
+        ${orders.map((order) => renderHistoryArchiveItem(order, findLaundry(order.laundryId))).join("")}
+      </div>
+    </details>
+  `;
+}
+
+function renderHistoryArchiveItem(order, laundry) {
+  return `
+    <article class="history-archive-item ${order.done ? "done" : ""}">
       <div class="card-head history-details">
         <div>
           <h3 class="card-title">${escapeHtml(laundry?.name || t("laundryName"))}</h3>
@@ -1691,7 +1701,7 @@ function renderHistoryCard(order, laundry) {
         </div>
       </div>
       ${renderDeliveryLocationLine(order)}
-    </details>
+    </article>
   `;
 }
 
@@ -2313,11 +2323,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=67",
-        badge: "assets/icon.svg?v=67"
+        icon: "assets/icon.svg?v=68",
+        badge: "assets/icon.svg?v=68"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=67" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=68" });
     }
   });
 }

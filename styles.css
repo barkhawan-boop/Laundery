@@ -678,6 +678,23 @@ button {
   padding: 0 16px 16px;
 }
 
+.history-archive-list {
+  display: grid;
+  gap: 14px;
+  padding: 0 16px 16px;
+}
+
+.history-archive-item {
+  display: grid;
+  gap: 10px;
+  padding-block: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.history-archive-item .history-details {
+  padding: 0;
+}
+
 .order-pieces-date {
   display: inline-flex;
   flex-wrap: wrap;
