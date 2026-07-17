@@ -146,9 +146,9 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  width: 100vw;
-  margin-inline: calc(50% - 50vw);
-  padding: 4px max(14px, env(safe-area-inset-right)) 2px max(14px, env(safe-area-inset-left));
+  width: 100%;
+  margin-inline: 0;
+  padding: 4px 0 2px;
 }
 
 .brand {
@@ -156,6 +156,7 @@ button {
   align-items: center;
   gap: 13px;
   min-width: 0;
+  width: 100%;
   direction: ltr;
 }
 
