@@ -877,7 +877,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=66" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=67" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -906,7 +906,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=66" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=67" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -922,7 +922,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=66" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=67" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1338,10 +1338,6 @@ function renderOwnerCustomerGroup(group, blocked = false) {
         <input type="hidden" name="customerName" value="${escapeHtml(latest?.customerName || group.name || "")}" />
         <input type="hidden" name="customerPhone" value="${escapeHtml(latest?.customerPhone || group.phone || "")}" />
         <h4 class="mini-title">${escapeHtml(t("newSubmission"))}</h4>
-        <label class="field">
-          <span>${escapeHtml(t("orderName"))} (${escapeHtml(t("optional"))})</span>
-          <input class="input" name="orderName" autocomplete="off" ${disabledAttr} />
-        </label>
         ${renderServiceChoiceTable(disabledAttr)}
         <label class="check-field">
           <input name="urgent" type="checkbox" ${disabledAttr} />
@@ -2317,11 +2313,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=66",
-        badge: "assets/icon.svg?v=66"
+        icon: "assets/icon.svg?v=67",
+        badge: "assets/icon.svg?v=67"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=66" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=67" });
     }
   });
 }
