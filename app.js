@@ -1,32 +1,31 @@
 const STORAGE_KEY = "laundery-erbil-state-v1";
 const ADMIN_PIN = "0000";
-const DEFAULT_LAUNDRY_SERVICES = "Clothes Cleaning & Ironing, Dry Cleaning & Laundry, Blanket Washing, Cleaning, Drying";
+const DEFAULT_LAUNDRY_SERVICES = "Blanket & Curtain Washing, Ironing Clothes Blankets & Curtains, Washing, Washing & Drying";
 const REMEMBER_ADMIN_SESSION = false;
 const laundryServiceLabels = {
-  clothesCleaningIroning: {
-    en: "Clothes Cleaning & Ironing",
-    ku: "شوشتن و ئوتووکردنی جل",
-    ar: "تنظيف وكي الملابس"
+  blanketCurtainWashing: {
+    en: "Blanket & Curtain Washing",
+    ku: "شوشتنی بەتانی و پەردە",
+    ar: "غسل البطانيات والستائر",
+    aliases: ["Blanket Washing"]
   },
-  dryCleaningLaundry: {
-    en: "Dry Cleaning & Laundry",
-    ku: "وشک شوشتن و لاندری",
-    ar: "تنظيف جاف وغسيل"
+  ironingAll: {
+    en: "Ironing Clothes Blankets & Curtains",
+    ku: "ووتوکردنی جل و بەرگ و بەتانی و پەردە",
+    ar: "كي الملابس والبطانيات والستائر",
+    aliases: ["Clothes Cleaning & Ironing"]
   },
-  blanketWashing: {
-    en: "Blanket Washing",
-    ku: "شوشتنی بەتانی",
-    ar: "غسل البطانيات"
+  washing: {
+    en: "Washing",
+    ku: "شوشتن",
+    ar: "غسل",
+    aliases: ["Cleaning"]
   },
-  cleaning: {
-    en: "Cleaning",
-    ku: "پاککردنەوە",
-    ar: "تنظيف"
-  },
-  drying: {
-    en: "Drying",
-    ku: "وشککردن",
-    ar: "تجفيف"
+  washingDryingService: {
+    en: "Washing & Drying",
+    ku: "شوشتن و ووشک کردن",
+    ar: "غسل وتجفيف",
+    aliases: ["Dry Cleaning & Laundry"]
   }
 };
 
@@ -868,7 +867,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=61" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=62" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -897,7 +896,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=61" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=62" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -913,7 +912,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=61" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=62" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -2275,11 +2274,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=61",
-        badge: "assets/icon.svg?v=61"
+        icon: "assets/icon.svg?v=62",
+        badge: "assets/icon.svg?v=62"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=61" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=62" });
     }
   });
 }
@@ -2432,11 +2431,19 @@ function renderLaundryContact(laundry) {
 }
 
 function laundryServices(laundry) {
+  const seen = new Set();
   return String(laundry.services || DEFAULT_LAUNDRY_SERVICES)
     .split(",")
     .map((service) => service.trim())
     .filter(Boolean)
-    .map(localizeLaundryService);
+    .map(localizeLaundryService)
+    .filter(Boolean)
+    .filter((service) => {
+      const normalized = normalizeServiceName(service);
+      if (seen.has(normalized)) return false;
+      seen.add(normalized);
+      return true;
+    });
 }
 
 function localizedDefaultLaundryServices() {
@@ -2446,6 +2453,7 @@ function localizedDefaultLaundryServices() {
 }
 
 function localizeLaundryService(service) {
+  if (normalizeServiceName(service) === "drying") return "";
   const key = laundryServiceKey(service);
   const labels = key ? laundryServiceLabels[key] : null;
   return labels ? labels[data.language || "en"] || labels.en : service;
@@ -2454,7 +2462,7 @@ function localizeLaundryService(service) {
 function laundryServiceKey(service) {
   const normalized = normalizeServiceName(service);
   return Object.entries(laundryServiceLabels).find(([, labels]) =>
-    Object.values(labels).some((label) => normalizeServiceName(label) === normalized)
+    [labels.en, labels.ku, labels.ar, ...(labels.aliases || [])].some((label) => normalizeServiceName(label) === normalized)
   )?.[0] || null;
 }
 
