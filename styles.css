@@ -312,6 +312,16 @@ button {
   margin-bottom: 0;
 }
 
+.owner-section-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.owner-section-nav .btn {
+  width: 100%;
+}
+
 .delivery-toggle-row {
   display: flex;
   align-items: center;

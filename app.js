@@ -55,6 +55,8 @@ const dict = {
     customerLogin: "Customer sign in",
     adminLogin: "Admin sign in",
     addCustomer: "Add customer",
+    addCustomerWindow: "Add customer",
+    dailyWork: "Daily work",
     newSubmission: "New submission",
     orderName: "Order name",
     submissions: "Submissions",
@@ -183,6 +185,8 @@ const dict = {
     customerLogin: "چوونەژوورەوەی کڕیار",
     adminLogin: "چوونەژوورەوەی ئەدمین",
     addCustomer: "زیادکردنی کڕیار",
+    addCustomerWindow: "زیادکردنی کڕیار",
+    dailyWork: "کاری ڕۆژانە",
     newSubmission: "داواکاری نوێ",
     orderName: "ناوی داواکاری",
     submissions: "سپاردنەکان",
@@ -311,6 +315,8 @@ const dict = {
     customerLogin: "دخول الزبون",
     adminLogin: "دخول المشرف",
     addCustomer: "إضافة زبون",
+    addCustomerWindow: "إضافة زبون",
+    dailyWork: "العمل اليومي",
     newSubmission: "تسليم جديد",
     orderName: "اسم الطلب",
     submissions: "التسليمات",
@@ -511,6 +517,10 @@ document.addEventListener("click", (event) => {
   }
   if (action === "mark-read") {
     markRelevantNoticesRead();
+  }
+  if (action === "owner-section") {
+    view = { ...view, ownerSection: button.dataset.section || "menu" };
+    render();
   }
   if (action === "complete") {
     completeOrder(button.dataset.orderId);
@@ -867,7 +877,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=65" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=66" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -896,7 +906,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=65" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=66" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -912,7 +922,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=65" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=66" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1092,6 +1102,7 @@ function renderOwnerDashboard() {
   const customerGroups = groupCustomersByLaundry(laundry.id, active);
   const selectedCustomer = selectedOwnerCustomerGroup(laundry.id, customerGroups);
   const suggestedCustomerCode = generateCustomerCode(laundry.id);
+  const ownerSection = view.ownerSection || "menu";
 
   return `
     <section class="screen">
@@ -1113,48 +1124,79 @@ function renderOwnerDashboard() {
         <span class="delivery-status ${laundry.deliveryEnabled ? "on" : "off"}">${escapeHtml(t(laundry.deliveryEnabled ? "deliveryEnabled" : "deliveryDisabled"))}</span>
       </section>
       ${renderNotices(notices)}
-      <form class="panel form-grid" data-form="add-customer">
-        <h2 class="panel-title">${icons.add}<span>${escapeHtml(t("addCustomer"))}</span></h2>
-        <label class="field">
-          <span>${escapeHtml(t("customerName"))} (${escapeHtml(t("optional"))})</span>
-          <input class="input" name="customerName" autocomplete="name" ${disabledAttr} />
-        </label>
-        <label class="field">
-          <span>${escapeHtml(t("customerPhone"))} (${escapeHtml(t("optional"))})</span>
-          <input class="input" name="customerPhone" type="tel" inputmode="tel" autocomplete="tel" ${disabledAttr} />
-        </label>
-        <label class="field">
-          <span>${escapeHtml(t("customerCode"))}</span>
-          <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" readonly required ${disabledAttr} />
-        </label>
-        <button class="btn primary" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
-      </form>
-      <section class="panel form-grid" aria-label="${escapeHtml(t("orders"))}">
-        <h2 class="panel-title">${escapeHtml(t("orders"))}</h2>
-        ${customerGroups.length ? `
-          <label class="field compact-search-field">
-            <span>${escapeHtml(t("searchByCode"))}</span>
-            <input class="input mini-input" data-action="search-owner-customer-code" autocomplete="off" placeholder="${escapeHtml(t("customerCode"))}" />
-          </label>
-          <label class="field">
-            <span>${escapeHtml(t("existingCustomer"))}</span>
-            <select class="select" data-action="select-owner-customer">
-              ${customerGroups.map((group) => `
-                <option value="${escapeHtml(group.customerCode)}" ${selectedCustomer?.customerCode === group.customerCode ? "selected" : ""}>${escapeHtml(group.name)} - ${escapeHtml(t("codeLabel"))}: ${group.customerCode}</option>
-              `).join("")}
-            </select>
-          </label>
-          ${selectedCustomer ? renderSelectedCustomerInfo(selectedCustomer) : ""}
-          ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked) : ""}
-        ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
-      </section>
-      ${selectedCustomer ? `
-        <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(selectedCustomer.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
-      ` : ""}
+      ${ownerSection === "menu" ? renderOwnerSectionMenu() : renderOwnerSectionNav(ownerSection)}
+      ${ownerSection === "add-customer" ? renderOwnerAddCustomerPanel(suggestedCustomerCode, disabledAttr) : ""}
+      ${ownerSection === "daily-work" ? renderOwnerDailyWorkPanel(customerGroups, selectedCustomer, blocked) : ""}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
       </div>
     </section>
+  `;
+}
+
+function renderOwnerSectionMenu() {
+  return `
+    <section class="panel form-grid">
+      <button class="btn primary" data-action="owner-section" data-section="add-customer" type="button">${icons.add}${escapeHtml(t("addCustomerWindow"))}</button>
+      <button class="btn light" data-action="owner-section" data-section="daily-work" type="button">${icons.orders || ""}${escapeHtml(t("dailyWork"))}</button>
+    </section>
+  `;
+}
+
+function renderOwnerSectionNav(activeSection) {
+  return `
+    <nav class="panel owner-section-nav" aria-label="${escapeHtml(t("owner"))}">
+      <button class="btn ${activeSection === "add-customer" ? "primary" : "light"}" data-action="owner-section" data-section="add-customer" type="button">${icons.add}${escapeHtml(t("addCustomerWindow"))}</button>
+      <button class="btn ${activeSection === "daily-work" ? "primary" : "light"}" data-action="owner-section" data-section="daily-work" type="button">${icons.orders || ""}${escapeHtml(t("dailyWork"))}</button>
+    </nav>
+  `;
+}
+
+function renderOwnerAddCustomerPanel(suggestedCustomerCode, disabledAttr) {
+  return `
+    <form class="panel form-grid" data-form="add-customer">
+      <h2 class="panel-title">${icons.add}<span>${escapeHtml(t("addCustomer"))}</span></h2>
+      <label class="field">
+        <span>${escapeHtml(t("customerName"))} (${escapeHtml(t("optional"))})</span>
+        <input class="input" name="customerName" autocomplete="name" ${disabledAttr} />
+      </label>
+      <label class="field">
+        <span>${escapeHtml(t("customerPhone"))} (${escapeHtml(t("optional"))})</span>
+        <input class="input" name="customerPhone" type="tel" inputmode="tel" autocomplete="tel" ${disabledAttr} />
+      </label>
+      <label class="field">
+        <span>${escapeHtml(t("customerCode"))}</span>
+        <input class="input" name="customerCode" value="${escapeHtml(suggestedCustomerCode)}" autocomplete="off" readonly required ${disabledAttr} />
+      </label>
+      <button class="btn primary" type="submit" ${disabledAttr}>${icons.add}${escapeHtml(t("add"))}</button>
+    </form>
+  `;
+}
+
+function renderOwnerDailyWorkPanel(customerGroups, selectedCustomer, blocked) {
+  return `
+    <section class="panel form-grid" aria-label="${escapeHtml(t("orders"))}">
+      <h2 class="panel-title">${escapeHtml(t("dailyWork"))}</h2>
+      ${customerGroups.length ? `
+        <label class="field compact-search-field">
+          <span>${escapeHtml(t("searchByCode"))}</span>
+          <input class="input mini-input" data-action="search-owner-customer-code" autocomplete="off" placeholder="${escapeHtml(t("customerCode"))}" />
+        </label>
+        <label class="field">
+          <span>${escapeHtml(t("existingCustomer"))}</span>
+          <select class="select" data-action="select-owner-customer">
+            ${customerGroups.map((group) => `
+              <option value="${escapeHtml(group.customerCode)}" ${selectedCustomer?.customerCode === group.customerCode ? "selected" : ""}>${escapeHtml(group.name)} - ${escapeHtml(t("codeLabel"))}: ${group.customerCode}</option>
+            `).join("")}
+          </select>
+        </label>
+        ${selectedCustomer ? renderSelectedCustomerInfo(selectedCustomer) : ""}
+        ${selectedCustomer ? renderOwnerCustomerGroup(selectedCustomer, blocked) : ""}
+      ` : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+    </section>
+    ${selectedCustomer ? `
+      <button class="btn danger" data-action="delete-customer" data-customer-code="${escapeHtml(selectedCustomer.customerCode)}">${escapeHtml(t("deleteCustomer"))}</button>
+    ` : ""}
   `;
 }
 
@@ -1759,7 +1801,7 @@ function ownerLogin(formData) {
 
   const session = { role: "owner", laundryId: laundry.id };
   rememberSession(session);
-  view = { screen: "owner-dashboard", session };
+  view = { screen: "owner-dashboard", session, ownerSection: "menu" };
   render();
 }
 
@@ -2275,11 +2317,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=65",
-        badge: "assets/icon.svg?v=65"
+        icon: "assets/icon.svg?v=66",
+        badge: "assets/icon.svg?v=66"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=65" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=66" });
     }
   });
 }
