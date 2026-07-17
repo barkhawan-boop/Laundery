@@ -154,6 +154,7 @@ button {
   align-items: center;
   gap: 13px;
   min-width: 0;
+  direction: ltr;
 }
 
 .brand-trigger {
@@ -1155,7 +1156,6 @@ button {
 }
 
 [dir="rtl"] .card-head,
-[dir="rtl"] .topbar,
 [dir="rtl"] .panel-title {
   direction: rtl;
 }
