@@ -877,7 +877,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=69" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=70" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -906,7 +906,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=69" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=70" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -922,7 +922,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=69" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=70" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1123,10 +1123,10 @@ function renderOwnerDashboard() {
         </div>
         <span class="delivery-status ${laundry.deliveryEnabled ? "on" : "off"}">${escapeHtml(t(laundry.deliveryEnabled ? "deliveryEnabled" : "deliveryDisabled"))}</span>
       </section>
-      ${renderNotices(notices)}
       ${ownerSection === "menu" ? renderOwnerSectionMenu() : renderOwnerSectionNav(ownerSection)}
       ${ownerSection === "add-customer" ? renderOwnerAddCustomerPanel(suggestedCustomerCode, disabledAttr) : ""}
       ${ownerSection === "daily-work" ? renderOwnerDailyWorkPanel(customerGroups, selectedCustomer, blocked) : ""}
+      ${ownerSection === "notifications" ? renderOwnerNotificationsPanel(notices) : ""}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
       </div>
@@ -1136,9 +1136,10 @@ function renderOwnerDashboard() {
 
 function renderOwnerSectionMenu() {
   return `
-    <section class="panel form-grid">
+    <section class="panel owner-section-nav">
       <button class="btn primary" data-action="owner-section" data-section="add-customer" type="button">${icons.add}${escapeHtml(t("addCustomerWindow"))}</button>
       <button class="btn light" data-action="owner-section" data-section="daily-work" type="button">${icons.orders || ""}${escapeHtml(t("dailyWork"))}</button>
+      <button class="btn light" data-action="owner-section" data-section="notifications" type="button">${icons.bell}${escapeHtml(t("notifications"))}</button>
     </section>
   `;
 }
@@ -1148,8 +1149,13 @@ function renderOwnerSectionNav(activeSection) {
     <nav class="panel owner-section-nav" aria-label="${escapeHtml(t("owner"))}">
       <button class="btn ${activeSection === "add-customer" ? "primary" : "light"}" data-action="owner-section" data-section="add-customer" type="button">${icons.add}${escapeHtml(t("addCustomerWindow"))}</button>
       <button class="btn ${activeSection === "daily-work" ? "primary" : "light"}" data-action="owner-section" data-section="daily-work" type="button">${icons.orders || ""}${escapeHtml(t("dailyWork"))}</button>
+      <button class="btn ${activeSection === "notifications" ? "primary" : "light"}" data-action="owner-section" data-section="notifications" type="button">${icons.bell}${escapeHtml(t("notifications"))}</button>
     </nav>
   `;
+}
+
+function renderOwnerNotificationsPanel(notices) {
+  return renderNotices(notices);
 }
 
 function renderOwnerAddCustomerPanel(suggestedCustomerCode, disabledAttr) {
@@ -2323,11 +2329,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=69",
-        badge: "assets/icon.svg?v=69"
+        icon: "assets/icon.svg?v=70",
+        badge: "assets/icon.svg?v=70"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=69" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=70" });
     }
   });
 }
