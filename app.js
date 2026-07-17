@@ -880,7 +880,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=82" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=83" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -909,7 +909,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=82" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=83" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -925,7 +925,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=82" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=83" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1175,7 +1175,7 @@ function renderOwnerTodayTasksPanel(orders, blocked) {
 }
 
 function renderOwnerTodayTaskCard(order, blocked = false) {
-  return renderOwnerOrderCard(order, blocked);
+  return renderOwnerOrderCard(order, blocked, true);
 
   const name = order.customerName || existingCustomerName(order.laundryId, order.customerCode) || `${t("customer")} ${order.customerCode}`;
   const phone = order.customerPhone || existingCustomerPhone(order.laundryId, order.customerCode);
@@ -1468,15 +1468,22 @@ function renderSelectedCustomerInfo(group) {
   `;
 }
 
-function renderOwnerOrderCard(order, blocked = false) {
+function renderOwnerOrderCard(order, blocked = false, showCustomerHeader = false) {
   const name = order.customerName || `${t("customer")} ${order.customerCode}`;
+  const phone = order.customerPhone || existingCustomerPhone(order.laundryId, order.customerCode);
   const statusClass = order.done ? "done" : order.urgent || order.urgentByCustomer ? "urgent" : "";
   const deliveryLocationLine = renderDeliveryLocationLine(order);
   const orderNameLine = order.orderName ? `<p class="contact-line">${escapeHtml(t("orderName"))}: ${escapeHtml(order.orderName)}</p>` : "";
+  const customerHeader = showCustomerHeader ? `
+    <h4 class="card-title">${escapeHtml(name)}</h4>
+    <p class="meta">${escapeHtml(t("codeLabel"))}: ${escapeHtml(order.customerCode)}</p>
+    ${phone ? `<p class="meta">${escapeHtml(t("customerPhone"))}: ${escapeHtml(phone)}</p>` : ""}
+  ` : "";
   return `
     <article class="submission-item ${statusClass}">
       <div class="card-head">
         <div>
+          ${customerHeader}
           <h4 class="card-title">${escapeHtml(formatDate(order.createdAt))}</h4>
           ${orderNameLine}
           ${deliveryLocationLine}
@@ -2369,11 +2376,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=82",
-        badge: "assets/icon.svg?v=82"
+        icon: "assets/icon.svg?v=83",
+        badge: "assets/icon.svg?v=83"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=82" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=83" });
     }
   });
 }
