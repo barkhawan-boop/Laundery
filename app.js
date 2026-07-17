@@ -880,7 +880,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=84" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=85" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -909,7 +909,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=84" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=85" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -925,7 +925,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=84" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=85" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1270,6 +1270,7 @@ function renderCustomerDashboard() {
   return `
     <section class="screen">
       ${renderTopbar({ title: `${t("welcome")}, ${customerTitle}`, subtitle: laundry.name, back: false })}
+      ${renderCustomerIdentity(name, session.customerCode)}
       ${renderLaundryContact(laundry)}
       ${runningOrders.length ? runningOrders.map((order) => renderCustomerStatus(order, order, laundry)).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
       ${renderNotices(notices)}
@@ -1464,6 +1465,15 @@ function renderSelectedCustomerInfo(group) {
       <strong>${escapeHtml(group.name)}</strong>
       <span>${escapeHtml(t("codeLabel"))}: ${escapeHtml(group.customerCode)} · ${group.orders.length} ${escapeHtml(t("submissions"))}</span>
       ${group.phone ? `<span>${escapeHtml(t("customerPhone"))}: ${escapeHtml(group.phone)}</span>` : ""}
+    </div>
+  `;
+}
+
+function renderCustomerIdentity(name, code) {
+  return `
+    <div class="notice customer-info-panel">
+      <strong>${escapeHtml(name)}</strong>
+      <span>${escapeHtml(t("codeLabel"))}: ${escapeHtml(code)}</span>
     </div>
   `;
 }
@@ -2376,11 +2386,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=84",
-        badge: "assets/icon.svg?v=84"
+        icon: "assets/icon.svg?v=85",
+        badge: "assets/icon.svg?v=85"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=84" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=85" });
     }
   });
 }
