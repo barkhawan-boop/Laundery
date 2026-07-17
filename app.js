@@ -57,6 +57,7 @@ const dict = {
     addCustomer: "Add customer",
     addCustomerWindow: "Add customer",
     dailyWork: "Daily work",
+    todayTasks: "Today's tasks",
     newSubmission: "New submission",
     orderName: "Order name",
     submissions: "Submissions",
@@ -187,6 +188,7 @@ const dict = {
     addCustomer: "زیادکردنی کڕیار",
     addCustomerWindow: "زیادکردنی کڕیار",
     dailyWork: "کاری ڕۆژانە",
+    todayTasks: "ئیشەکانی ئەورۆ",
     newSubmission: "داواکاری نوێ",
     orderName: "ناوی داواکاری",
     submissions: "سپاردنەکان",
@@ -317,6 +319,7 @@ const dict = {
     addCustomer: "إضافة زبون",
     addCustomerWindow: "إضافة زبون",
     dailyWork: "العمل اليومي",
+    todayTasks: "مهام اليوم",
     newSubmission: "تسليم جديد",
     orderName: "اسم الطلب",
     submissions: "التسليمات",
@@ -877,7 +880,7 @@ function renderSplash() {
   return `
     <section class="splash-screen" aria-label="${escapeHtml(t("appName"))}">
       <div class="splash-brand">
-        <img class="splash-logo" src="assets/icon.svg?v=73" alt="" />
+        <img class="splash-logo" src="assets/icon.svg?v=74" alt="" />
         <h1>${escapeHtml(t("appName"))}</h1>
       </div>
     </section>
@@ -906,7 +909,7 @@ function renderTopbar({ title = t("appName"), subtitle = "", back = true, secret
   return `
     <header class="topbar">
       <button class="brand brand-trigger brand-button" data-action="${brandAction}" type="button" aria-label="${escapeHtml(brandLabel)}">
-        <img class="brand-mark" src="assets/icon.svg?v=73" alt="" />
+        <img class="brand-mark" src="assets/icon.svg?v=74" alt="" />
         <div class="brand-text">
           ${subtitle ? `<div class="eyebrow">${escapeHtml(subtitle)}</div>` : ""}
           <h1 class="screen-title">${escapeHtml(title)}</h1>
@@ -922,7 +925,7 @@ function renderLanguage() {
     <section class="screen">
       <div class="hero-band">
         <div class="brand brand-trigger" data-action="secret-admin-tap" role="button" tabindex="0" aria-label="${escapeHtml(t("appName"))}">
-          <img class="brand-mark" src="assets/icon.svg?v=73" alt="" />
+          <img class="brand-mark" src="assets/icon.svg?v=74" alt="" />
           <div class="brand-text">
             <h1 class="title">${escapeHtml(t("appName"))}</h1>
           </div>
@@ -1093,6 +1096,7 @@ function renderOwnerDashboard() {
     .filter((order) => order.laundryId === laundry.id)
     .sort((a, b) => Number(a.done) - Number(b.done) || b.createdAt - a.createdAt);
   const active = orders.filter((order) => !order.done);
+  const todayActive = active.filter((order) => isToday(order.createdAt));
   const urgent = active.filter((order) => order.urgent || order.urgentByCustomer);
   const doneToday = orders.filter((order) => order.done && isToday(order.completedAt)).length;
   const notices = noticesForOwner(laundry.id);
@@ -1126,6 +1130,7 @@ function renderOwnerDashboard() {
       ${ownerSection === "menu" ? renderOwnerSectionMenu() : renderOwnerSectionNav(ownerSection)}
       ${ownerSection === "add-customer" ? renderOwnerAddCustomerPanel(suggestedCustomerCode, disabledAttr) : ""}
       ${ownerSection === "daily-work" ? renderOwnerDailyWorkPanel(customerGroups, selectedCustomer, blocked) : ""}
+      ${ownerSection === "today-tasks" ? renderOwnerTodayTasksPanel(todayActive, blocked) : ""}
       ${ownerSection === "notifications" ? renderOwnerNotificationsPanel(notices) : ""}
       <div class="footer-actions">
         <button class="btn ghost" data-action="logout">${escapeHtml(t("logout"))}</button>
@@ -1139,6 +1144,7 @@ function renderOwnerSectionMenu() {
     <section class="panel owner-section-nav">
       <button class="btn primary" data-action="owner-section" data-section="add-customer" type="button">${icons.add}${escapeHtml(t("addCustomerWindow"))}</button>
       <button class="btn light" data-action="owner-section" data-section="daily-work" type="button">${icons.orders || ""}${escapeHtml(t("dailyWork"))}</button>
+      <button class="btn light" data-action="owner-section" data-section="today-tasks" type="button">${icons.done}${escapeHtml(t("todayTasks"))}</button>
       <button class="btn light" data-action="owner-section" data-section="notifications" type="button">${icons.bell}${escapeHtml(t("notifications"))}</button>
     </section>
   `;
@@ -1149,6 +1155,7 @@ function renderOwnerSectionNav(activeSection) {
     <nav class="panel owner-section-nav" aria-label="${escapeHtml(t("owner"))}">
       <button class="btn ${activeSection === "add-customer" ? "primary" : "light"}" data-action="owner-section" data-section="add-customer" type="button">${icons.add}${escapeHtml(t("addCustomerWindow"))}</button>
       <button class="btn ${activeSection === "daily-work" ? "primary" : "light"}" data-action="owner-section" data-section="daily-work" type="button">${icons.orders || ""}${escapeHtml(t("dailyWork"))}</button>
+      <button class="btn ${activeSection === "today-tasks" ? "primary" : "light"}" data-action="owner-section" data-section="today-tasks" type="button">${icons.done}${escapeHtml(t("todayTasks"))}</button>
       <button class="btn ${activeSection === "notifications" ? "primary" : "light"}" data-action="owner-section" data-section="notifications" type="button">${icons.bell}${escapeHtml(t("notifications"))}</button>
     </nav>
   `;
@@ -1156,6 +1163,37 @@ function renderOwnerSectionNav(activeSection) {
 
 function renderOwnerNotificationsPanel(notices) {
   return renderNotices(notices);
+}
+
+function renderOwnerTodayTasksPanel(orders, blocked) {
+  return `
+    <section class="panel form-grid" aria-label="${escapeHtml(t("todayTasks"))}">
+      <h2 class="panel-title">${icons.done}<span>${escapeHtml(t("todayTasks"))}</span></h2>
+      ${orders.length ? orders.map((order) => renderOwnerTodayTaskCard(order, blocked)).join("") : `<div class="empty">${escapeHtml(t("noOrders"))}</div>`}
+    </section>
+  `;
+}
+
+function renderOwnerTodayTaskCard(order, blocked = false) {
+  const name = order.customerName || existingCustomerName(order.laundryId, order.customerCode) || `${t("customer")} ${order.customerCode}`;
+  const phone = order.customerPhone || existingCustomerPhone(order.laundryId, order.customerCode);
+
+  return `
+    <article class="card ${order.urgent || order.urgentByCustomer ? "urgent" : ""}">
+      <div class="card-head">
+        <div>
+          <h3 class="card-title">${escapeHtml(name)}</h3>
+          <p class="meta">${escapeHtml(t("codeLabel"))}: ${escapeHtml(order.customerCode)} · ${escapeHtml(formatDate(order.createdAt))}</p>
+          ${phone ? `<p class="meta">${escapeHtml(t("customerPhone"))}: ${escapeHtml(phone)}</p>` : ""}
+        </div>
+        <div class="badge-row">
+          ${order.urgent || order.urgentByCustomer ? `<span class="badge urgent">${escapeHtml(t("urgent"))}</span>` : ""}
+          ${order.deliveryRequested ? `<span class="badge info">${icons.truck}${escapeHtml(t("delivery"))}</span>` : ""}
+        </div>
+      </div>
+      ${renderOwnerOrderCard(order, blocked)}
+    </article>
+  `;
 }
 
 function renderOwnerAddCustomerPanel(suggestedCustomerCode, disabledAttr) {
@@ -1932,7 +1970,7 @@ function addCustomer(formData, form) {
 
   data.orders.push(order);
   view.selectedCustomerCode = customerCode;
-  view.ownerSection = "daily-work";
+  view.ownerSection = "today-tasks";
 
   if (urgent) {
     addNotice({
@@ -2331,11 +2369,11 @@ function notifyDevice(title, body) {
     if (registration?.showNotification) {
       registration.showNotification(title, {
         body,
-        icon: "assets/icon.svg?v=73",
-        badge: "assets/icon.svg?v=73"
+        icon: "assets/icon.svg?v=74",
+        badge: "assets/icon.svg?v=74"
       });
     } else {
-      new Notification(title, { body, icon: "assets/icon.svg?v=73" });
+      new Notification(title, { body, icon: "assets/icon.svg?v=74" });
     }
   });
 }
